@@ -1,0 +1,252 @@
+html {
+	font-family: "Lato", sans-serif;
+	font-weight: 300;
+}
+
+/***************
+****************
+FONTS
+****************
+***************/
+
+h1 {
+	font-family: "Roboto", sans-serif;
+	font-size: 72px;
+	font-weight: 600;
+	color: #fff;
+	text-transform: uppercase;
+}
+
+h2 {
+	font-family: "Roboto", sans-serif;
+	font-size: 30px;
+	font-weight: 600;
+	color: #565656;
+}
+
+h3 {
+	font-family: "Roboto", sans-serif;
+	font-size: 20px;
+	font-weight: 500;
+	color: #fff;
+}
+
+h4 {
+	font-family: "Roboto", sans-serif;
+	font-size: 25px;
+	font-weight: 500;
+	color: #fff;
+	text-transform: uppercase;
+}
+
+h5 {
+	font-family: "Roboto", sans-serif;
+	font-size: 16px;
+	font-weight: 500;
+	color: #fff;
+}
+
+a {
+	font-family: "Lato", sans-serif;
+}
+
+p {
+	font-family: "Lato", sans-serif;
+}
+
+.hero-text {
+	margin-top: 130px;
+	margin-bottom: 3px;
+}
+
+.hero-sub {
+	margin-bottom: 30px;
+	margin-top: 0;
+}
+
+.copyright {
+	margin-bottom: 0;
+}
+
+/***************
+****************
+ROW STYLES
+****************
+***************/
+
+.hero {
+	background-image: url(img/hero-bg-5.jpg);
+}
+
+.cta {
+	background-color: rgba(0,0,0,0.4);
+	padding: 30px 0;
+}
+
+.off-white {
+	background-color: #f5f5f5;
+	width: 100%;
+}
+
+.featured-title {
+	padding: 30px 0;
+}
+
+.footer {
+	background-color: #2b2d2e;
+	color: #fff;
+	padding: 20px 0;
+}
+
+/***************
+****************
+BOOTSTRAP MODS
+****************
+***************/
+
+.navbar-default {
+	background-color: rgba(0,0,0,0.15);
+	border-color: transparent;
+	padding: 10px 0;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #fff;
+    padding: 5px 15px;
+    font-weight: 300;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #fff;
+}
+.navbar-default .navbar-nav > .active > a, 
+.navbar-default .navbar-nav > .active > a:hover, 
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #555;
+    background-color: #E7E7E7;
+}
+.navbar-default .navbar-nav > .open > a, 
+.navbar-default .navbar-nav > .open > a:hover, 
+.navbar-default .navbar-nav > .open > a:focus {
+    color: #555;
+    background-color: #D5D5D5;
+}
+/* caret */
+.navbar-default .navbar-nav > .dropdown > a .caret {
+    border-top-color: #777;
+    border-bottom-color: #777;
+}
+
+.col-full {
+	padding: 0;
+}
+
+/***************
+****************
+BUTTONS
+****************
+***************/
+
+.ghost-button {
+	display: inline-block;
+	padding: 10px 30px;
+	color: #fff;
+	font-family: "Roboto", sans-serif;
+	font-weight: 500;
+	font-size: 16px;
+	border-radius: 2px;
+	text-align: center;
+	outline: none;
+	text-decoration: none;
+	margin-bottom: 140px;
+	background-color: rgba(255,255,255,0.3);
+	transition: background-color 0.1s ease-out;
+}
+
+.ghost-button:hover,
+.ghost-button:active {
+	text-decoration: none;
+	color: #fff;
+	background-color: rgba(0,0,0,0.3);
+	transition: background-color 0.1s ease-in;
+}
+
+nav li .button-nav-link {
+	border: 2px solid #fff;
+	color: #fff;
+	margin-right: 15px;
+	transition: background-color 0.1s ease-out;
+}
+
+.button-nav-link:hover {
+	color: #fff !important;
+	background-color: rgba(0,0,0,0.1) !important;
+	transition: background-color 0.1s ease-in;
+}
+
+/***************
+****************
+FORM STYLES
+****************
+***************/
+
+.main-form select {
+	background-color: #fff;
+    border: none;
+    border-radius: 0px;
+    border-right: 1px solid #565656;
+    padding: 9px 12px;
+    font-size: 16px;
+    outline: 0;
+    width: 100%;
+    box-sizing: border-box; 
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box; 
+    color: #565656;
+    -webkit-appearance: none;
+    background: url(img/arrow-down.png) no-repeat right #fff;
+    background-position: 97% 50%;
+}
+
+.ghost-submit {
+	color: #fff;
+	font-size: 16px;
+	text-align: center;
+	width: 100%;
+	padding: 9px 12px;
+	border: 0;
+	outline: none;
+	text-decoration: none;
+	background-color: rgb(255,82,87);
+	transition: background-color 0.1s ease-out;
+}
+
+.ghost-submit:hover,
+.ghost-submit:active {
+	text-decoration: none;
+	color: #fff;
+	background-color: rgb(255,116,120);
+	transition: background-color 0.1s ease-in;
+}
+
+/***************
+****************
+GENERAL
+****************
+***************/
+
+.featured {
+	background-position: center;
+	background-size: cover;
+	width: 95%;
+	margin-bottom: 20px;
+}
+
+.featured-text {
+	padding: 120px 0;
+	background-color: rgba(0,0,0,.5);
+}
+
+.bottom-40 {
+	margin-bottom: 40px;
+}
