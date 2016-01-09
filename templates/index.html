@@ -1,24 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-	<link rel="stylesheet" href="../static/style.css">
-	<title>Share A Lens</title>
-
-	<!-- Google Fonts -->
-	<link href="https://fonts.googleapis.com/css?family=Lato:400,300,700,900,300italic,400italic,700italic,900italic" rel="stylesheet">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:700,500,400' rel='stylesheet' type='text/css'>
-
-	<!-- Open Graph Meta Tags -->
-	<meta property="og:url" content="http://www.sharealens.com/">
-	<meta property="og:title" content="Share A Lens">
-	<!--<meta property="og:description" content="Find thousands of lenses for rent near you">
-	<meta property="og:image" content="">-->
-
-</head>
-<body>
+{% extends "main.html" %}
+{% block content %}
 	<div class="hero">
 		<!-- Navigation -->
 		<nav class="navbar navbar-default transparent">
@@ -68,7 +49,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-10 col-sm-offset-1 col-xs-12">
-						<form action="#" class="main-form">
+						<form action="{{url_for('showLenses')}}" class="main-form">
 							<div class="col-sm-5 col-full">
 								<select class="dropdown">
 									<option value="" disabled selected>Camera Brand</option>
@@ -139,7 +120,4 @@
 			</div>
 		</div>
 	</div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% endblock %}

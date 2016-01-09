@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -18,7 +18,7 @@ class User(Base):
 
 
 class Lens(Base):
-    __tablename__ = 'restaurant'
+    __tablename__ = 'lens'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(350), nullable=False)
@@ -30,6 +30,7 @@ class Lens(Base):
     price_per_day = Column(String(8))
     price_per_week = Column(String(8))
     price_per_month = Column(String(8))
+    picture = Column(String(250))
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     user = relationship(User)
 
@@ -48,6 +49,20 @@ class Lens(Base):
             'price_per_week': self.price_per_week,
             'price_per_month': self.price_per_month,
         }
+
+
+class Rental(Base):
+    __tablename__ = 'rental'
+
+    id = Column(Integer, primary_key=True)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime, nullable=False)
+    renter_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    owner_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    lens_id = Column(Integer, ForeignKey('lens.id'), nullable=False)
+    renter = relationship("User", foreign_keys=[renter_id])
+    owner = relationship("User", foreign_keys=[owner_id])
+    lens = relationship(Lens)
 
 
 engine = create_engine('sqlite:///sharealens.db')
