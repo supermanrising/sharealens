@@ -5,6 +5,10 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Lens, User
 import random, string
 
+# IMPORTS FOR PAGINATION
+from flask.ext.paginate import Pagination
+from sqlalchemy import func
+
 # IMPORTS FOR OAUTH STEP
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
@@ -33,17 +37,28 @@ def showHome():
 
 @app.route('/lenses')
 def showLenses():
+	search = True
 	brand = request.args['brand']
 	style = request.args['style']
+	try:
+		page = int(request.args.get('page', 1))
+	except ValueError:
+		page = 1
+	offset = (page - 1) * 10
 	if (brand == 'all' and style == 'all'):
-		lenses = session.query(Lens).all()
+		lenses = session.query(Lens).limit(10).offset(offset)
+		rows = session.query(func.count(Lens.id)).scalar()
 	elif (brand == 'all' and style != 'all'):
 		lenses = session.query(Lens).filter_by(style=style).all()
+		rows = session.query(func.count(Lens.id)).filter_by(style=style).scalar()
 	elif (brand != 'all' and style == 'all'):
 		lenses = session.query(Lens).filter_by(brand=brand).all()
+		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).scalar()
 	else:
 		lenses = session.query(Lens).filter_by(brand=brand).filter_by(style=style).all()
-	return render_template('lenses.html', lenses = lenses)
+		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).filter_by(style=style).scalar()
+	pagination = Pagination(page=page, total=rows, search=search, record_name='lenses', found=rows, alignment='right')
+	return render_template('lenses.html', lenses=lenses, pagination=pagination)
 
 
 if __name__ == '__main__':
