@@ -104,37 +104,79 @@ BOOTSTRAP MODS
 ****************
 ***************/
 
-.navbar-default {
+.transparent {
 	background-color: rgba(0,0,0,0.15);
 	border-color: transparent;
 	padding: 10px 0;
+	border-radius: 0;
 }
 
-.navbar-default .navbar-nav > li > a {
+.transparent .navbar-nav > li > a {
     color: #fff;
-    padding: 5px 15px;
+    padding: 10px 15px;
     font-weight: 300;
 }
-.navbar-default .navbar-nav > li > a:hover,
-.navbar-default .navbar-nav > li > a:focus {
+.transparent .navbar-nav > li > a:hover,
+.transparent .navbar-nav > li > a:focus {
     color: #fff;
 }
-.navbar-default .navbar-nav > .active > a, 
-.navbar-default .navbar-nav > .active > a:hover, 
-.navbar-default .navbar-nav > .active > a:focus {
+.transparent .navbar-nav > .active > a, 
+.transparent .navbar-nav > .active > a:hover, 
+.transparent .navbar-nav > .active > a:focus {
     color: #555;
     background-color: #E7E7E7;
 }
-.navbar-default .navbar-nav > .open > a, 
-.navbar-default .navbar-nav > .open > a:hover, 
-.navbar-default .navbar-nav > .open > a:focus {
+.transparent .navbar-nav > .open > a, 
+.transparent .navbar-nav > .open > a:hover, 
+.transparent .navbar-nav > .open > a:focus {
     color: #555;
     background-color: #D5D5D5;
 }
 /* caret */
-.navbar-default .navbar-nav > .dropdown > a .caret {
+.transparent .navbar-nav > .dropdown > a .caret {
     border-top-color: #777;
     border-bottom-color: #777;
+}
+
+.navbar-white {
+	background-color: #fff;
+	border-bottom-color: #ccc;
+	padding: 10px 0;
+	border-radius: 0;
+}
+
+.navbar-white .navbar-nav > li > a {
+    padding: 10px 15px;
+    color: #565656;
+    font-weight: 300;
+}
+
+.navbar-white .navbar-nav > li > a:hover,
+.navbar-white .navbar-nav > li > a:focus {
+	color: #565656;
+}
+
+.navbar-white .navbar-nav > .active > a, 
+.navbar-white .navbar-nav > .active > a:hover, 
+.navbar-white .navbar-nav > .active > a:focus {
+    color: #555;
+    background-color: #E7E7E7;
+}
+.navbar-white .navbar-nav > .open > a, 
+.navbar-white .navbar-nav > .open > a:hover, 
+.navbar-white .navbar-nav > .open > a:focus {
+    color: #555;
+    background-color: #D5D5D5;
+}
+/* caret */
+.navbar-white .navbar-nav > .dropdown > a .caret {
+    border-top-color: #777;
+    border-bottom-color: #777;
+}
+
+.navbar-brand {
+	padding: 3px 20px 0 20px;
+	height: auto;
 }
 
 .col-full {
@@ -171,16 +213,29 @@ BUTTONS
 	transition: background-color 0.1s ease-in;
 }
 
-nav li .button-nav-link {
+.transparent .button-nav-link {
 	border: 2px solid #fff;
 	color: #fff;
 	margin-right: 15px;
 	transition: background-color 0.1s ease-out;
 }
 
-.button-nav-link:hover {
+.transparent .button-nav-link:hover {
 	color: #fff !important;
 	background-color: rgba(0,0,0,0.1) !important;
+	transition: background-color 0.1s ease-in;
+}
+
+.navbar-white .button-nav-link {
+	border: 1px solid #838383;
+	color: #565656;
+	margin-right: 15px;
+	transition: background-color 0.1s ease-out;
+}
+
+.navbar-white .button-nav-link:hover {
+	color: #565656 !important;
+	background-color: rgba(0,0,0,0.05) !important;
 	transition: background-color 0.1s ease-in;
 }
 
@@ -249,4 +304,20 @@ GENERAL
 
 .bottom-40 {
 	margin-bottom: 40px;
+}
+
+.logo {
+	padding: 0;
+}
+
+@media screen and (max-width: 767px) {
+	.transparent .button-nav-link {
+		border: 0;
+		margin: 0;
+	}
+
+	.navbar-white .button-nav-link {
+		border: 0;
+		margin: 0;
+	}
 }

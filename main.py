@@ -33,7 +33,17 @@ def showHome():
 
 @app.route('/lenses')
 def showLenses():
-	
+	brand = request.args['brand']
+	style = request.args['style']
+	if (brand == 'all' and style == 'all'):
+		lenses = session.query(Lens).all()
+	elif (brand == 'all' and style != 'all'):
+		lenses = session.query(Lens).filter_by(style=style).all()
+	elif (brand != 'all' and style == 'all'):
+		lenses = session.query(Lens).filter_by(brand=brand).all()
+	else:
+		lenses = session.query(Lens).filter_by(brand=brand).filter_by(style=style).all()
+	return render_template('lenses.html', lenses = lenses)
 
 
 if __name__ == '__main__':
