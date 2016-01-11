@@ -77,7 +77,7 @@
 				<div class="row search-results">
 					<h2 class="text-center">Search Results</h2>
 				</div>
-				{% if remaining > 0 %}
+				{% if rows > 0 %}
 				<div class="row search-results">
 					<div class="col-sm-6">
 						{{ pagination.info }}
@@ -89,8 +89,10 @@
 				<div class="row result-row search-results">			
 					{% for lens in lenses %}
 						<div class="search-result col-sm-4">
-							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
-							<p>{{lens.name}}</p>
+							<a href="{{url_for('showLens', lens_id = lens.id)}}" class="lens-link">
+								<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
+								<p>{{lens.name}}</p>
+							</a>
 						</div>
 						{% if loop.last != true %}
 							{% if loop.index % 3 == 0 %}

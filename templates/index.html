@@ -57,21 +57,18 @@
 								<select class="dropdown" name="brand">
 									<option value="all" selected>Camera Brand</option>
 									<option value="all">All Brands</option>
-									<option value="Canon">Canon</option>
-									<option value="Nikon">Nikon</option>
-									<option value="Sony">Sony</option>
+									{% for brand in brands %}
+										<option value="{{brand}}">{{brand}}</option>
+									{% endfor %}
 								</select>
 							</div>
 							<div class="col-sm-5 col-full">
 								<select class="dropdown" name="style">
 									<option value="all" selected>Lens Type</option>
 									<option value="all">All Lens Types</option>
-									<option value="Ultra Wide">Ultra Wide</option>
-									<option value="Wide Angle">Wide Angle</option>
-									<option value="Telephoto">Telephoto</option>
-									<option value="Super Zoom">Super Zoom</option>
-									<option value="Macro">Macro</option>
-									<option value="Portrait">Portrait</option>
+									{% for style in styles %}
+										<option value="{{style}}">{{style}}</option>
+									{% endfor %}
 								</select>
 							</div>
 							<div class="col-sm-2 col-full">
@@ -91,30 +88,18 @@
 				</div>
 			</div>
 			<div class="row bottom-40">
-				<div class="col-sm-4">
-					<div class="featured text-center" style="background-image: url(../static/lens-img/1/1.jpg);">
-						<div class="featured-text">
-							<h4>Canon</h4>
-							<h5>50mm 1.8</h5>
+				{% for lens in featured %}
+					<div class="col-sm-4">
+						<div class="featured text-center" style="background-image: url(../static/lens-img/{{lens.picture}});">
+							<a href="{{url_for('showLens', lens_id = lens.id)}}" class="featured-link">
+								<div class="featured-text">
+									<h4>{{lens.brand}}</h4>
+									<h5>{{lens.zoom_min}} {% if lens.zoom_min != lens.zoom_max %}- {{lens.zoom_max}}{% endif %} F/{{lens.aperture}}</h5>
+								</div>
+							</a>
 						</div>
 					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="featured text-center" style="background-image: url(../static/lens-img/1/1.jpg);">
-						<div class="featured-text">
-							<h4>Canon</h4>
-							<h5>50mm 1.8</h5>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-4">
-					<div class="featured text-center" style="background-image: url(../static/lens-img/1/1.jpg);">
-						<div class="featured-text">
-							<h4>Canon</h4>
-							<h5>50mm 1.8</h5>
-						</div>
-					</div>
-				</div>
+				{% endfor %}
 			</div>
 		</div>
 	</div>

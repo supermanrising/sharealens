@@ -31,8 +31,18 @@ session = DBSession()
 
 @app.route('/')
 def showHome():
-	featured = session.query(Lens).limit(3)
-	return render_template('index.html', featured = featured)
+	totalLenses = session.query(func.count(Lens.id)).scalar()
+	featured = []
+	for num in range(1,4):
+		randomNumber = random.randrange(1, totalLenses)
+		featured.append(session.query(Lens).filter_by(id=randomNumber).one())
+	brands = []
+	for value in session.query(Lens.brand).distinct():
+		brands.append(value[0])
+	styles = []
+	for value in session.query(Lens.style).distinct():
+		styles.append(value[0])
+	return render_template('index.html', featured=featured, brands=brands, styles=styles)
 
 
 @app.route('/lenses')
@@ -57,26 +67,18 @@ def showLenses():
 		lenses = session.query(Lens).order_by(Lens.name).limit(12).offset(offset)
 		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).scalar()
-		# count total lenses visible on this page
-		remaining = rows - (page - 1) * 12
 	elif (brand == 'all' and style != 'all'):
 		lenses = session.query(Lens).filter_by(style=style).order_by(Lens.name).limit(12).offset(offset)
 		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).filter_by(style=style).scalar()
-		# count total lenses visible on this page
-		remaining = rows - (page - 1) * 12
 	elif (brand != 'all' and style == 'all'):
 		lenses = session.query(Lens).filter_by(brand=brand).order_by(Lens.name).limit(12).offset(offset)
 		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).scalar()
-		# count total lenses visible on this page
-		remaining = rows - (page - 1) * 12
 	else:
 		lenses = session.query(Lens).filter_by(brand=brand).filter_by(style=style).order_by(Lens.name).limit(12).offset(offset)
 		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).filter_by(style=style).scalar()
-		# count total lenses visible on this page
-		remaining = rows - (page - 1) * 12
 	brands = []
 	for value in session.query(Lens.brand).distinct():
 		brands.append(value[0])
@@ -85,7 +87,13 @@ def showLenses():
 		styles.append(value[0])
 	msg = 'Results <b>{start}</b> - <b>{end}</b> of <b>{found}</b> {record_name}'
 	pagination = Pagination(page=page, total=rows, record_name='lenses', found=rows, css_framework='bootstrap3', display_msg=msg, per_page=12)
-	return render_template('lenses.html', lenses=lenses, remaining=remaining, pagination=pagination, brands=brands, styles=styles)
+	return render_template('lenses.html', lenses=lenses, rows=rows, pagination=pagination, brands=brands, styles=styles)
+
+
+@app.route('/lens/<int:lens_id>')
+def showLens(lens_id):
+	lens = session.query(Lens).filter_by(id=lens_id).one()
+	return render_template('lens.html', lens=lens)
 
 
 if __name__ == '__main__':
