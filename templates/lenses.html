@@ -37,16 +37,48 @@
 		</div><!-- /.container-fluid -->
 	</nav>
 	<!-- End Navigation -->
-	<div class="container">
+	<div class="container-fluid">
 		<div class="row">
-			<div class="col-sm-2">
+			<div class="col-sm-3 col-md-2 search-advanced">
+				<ul class="search-options">
+					<li class="search-title">Brand</li>
+					<li class="search-all">
+						<a href="{{url_for(request.endpoint)}}?brand=all&amp;style={{ request.args.get('style') }}">
+							<input type="radio" onclick='window.location.assign("{{url_for(request.endpoint)}}?brand=all&amp;style={{ request.args.get('style') }}")' {% if request.args.get('brand') == 'all' %}checked{% endif %}> &nbsp;All
+						</a>
+					</li>
+					{% for brand in brands %}
+						{% set currentBrand = request.args.get('brand') %}
+						<li>
+							<a href="{{url_for(request.endpoint)}}?brand={{brand}}&amp;style={{ request.args.get('style') }}">
+								<input type="radio" onclick='window.location.assign("{{url_for(request.endpoint)}}?brand={{brand}}&amp;style={{ request.args.get('style') }}")' {% if brand == currentBrand %}checked{% endif %}> &nbsp;{{brand}}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+				<ul class="search-options">
+					<li class="search-title">Lens Type</li>
+					<li class="search-all">
+						<a href="{{url_for(request.endpoint)}}?brand={{ request.args.get('brand') }}&amp;style=all">
+							<input type="radio" onclick='window.location.assign("{{url_for(request.endpoint)}}?brand={{ request.args.get('brand') }}&amp;style=all")' {% if request.args.get('style') == 'all' %}checked{% endif %}> &nbsp;All
+						</a>
+					</li>
+					{% for style in styles %}
+						{% set currentStyle = request.args.get('style') %}
+						<li>
+							<a href="{{url_for(request.endpoint)}}?brand={{ request.args.get('brand') }}&amp;style={{style}}">
+								<input type="radio" onclick='window.location.assign("{{url_for(request.endpoint)}}?brand={{ request.args.get('brand') }}&amp;style={{style}}")' {% if style == currentStyle %}checked{% endif %}> &nbsp;{{style}}
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
 			</div>
-			<div class="col-sm-10">
-				<div class="row">
+			<div class="col-sm-9 col-md-10">
+				<div class="row search-results">
 					<h2 class="text-center">Search Results</h2>
 				</div>
 				{% if remaining > 0 %}
-				<div class="row">
+				<div class="row search-results">
 					<div class="col-sm-6">
 						{{ pagination.info }}
 					</div>
@@ -54,7 +86,7 @@
 						{{ pagination.links }}
 					</div>
 				</div>
-				<div class="row result-row">			
+				<div class="row result-row search-results">			
 					{% for lens in lenses1 %}
 						<div class="search-result col-sm-4">
 							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
@@ -66,7 +98,7 @@
 					<p class="text-center">No Results</p>
 				{% endif %}
 				{% if remaining > 3 %}
-				<div class="row result-row">			
+				<div class="row result-row search-results">			
 					{% for lens in lenses2 %}
 						<div class="search-result col-sm-4">
 							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
@@ -77,7 +109,7 @@
 				</div>
 				{% endif %}
 				{% if remaining > 6 %}
-				<div class="row result-row">			
+				<div class="row result-row search-results">			
 					{% for lens in lenses3 %}
 						<div class="search-result col-sm-4">
 							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
@@ -88,7 +120,7 @@
 				</div>
 				{% endif %}
 				{% if remaining > 9 %}
-				<div class="row result-row">			
+				<div class="row result-row search-results">			
 					{% for lens in lenses4 %}
 						<div class="search-result col-sm-4">
 							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
