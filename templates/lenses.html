@@ -87,48 +87,21 @@
 					</div>
 				</div>
 				<div class="row result-row search-results">			
-					{% for lens in lenses1 %}
+					{% for lens in lenses %}
 						<div class="search-result col-sm-4">
 							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
 							<p>{{lens.name}}</p>
 						</div>
+						{% if loop.last != true %}
+							{% if loop.index % 3 == 0 %}
+								</div>
+								<div class="row result-row search-results">
+							{% endif %}
+						{% endif %}
 					{% endfor %}
 				</div>
 				{% else %}
-					<p class="text-center">No Results</p>
-				{% endif %}
-				{% if remaining > 3 %}
-				<div class="row result-row search-results">			
-					{% for lens in lenses2 %}
-						<div class="search-result col-sm-4">
-							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
-							<p>{{lens.name}}</p>
-						</div>
-					{% else %}
-					{% endfor %}
-				</div>
-				{% endif %}
-				{% if remaining > 6 %}
-				<div class="row result-row search-results">			
-					{% for lens in lenses3 %}
-						<div class="search-result col-sm-4">
-							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
-							<p>{{lens.name}}</p>
-						</div>
-					{% else %}
-					{% endfor %}
-				</div>
-				{% endif %}
-				{% if remaining > 9 %}
-				<div class="row result-row search-results">			
-					{% for lens in lenses4 %}
-						<div class="search-result col-sm-4">
-							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
-							<p>{{lens.name}}</p>
-						</div>
-					{% else %}
-					{% endfor %}
-				</div>
+					<p class="no-results text-center">Oops!  We didn't find any lenses matching your search request.</p>
 				{% endif %}
 				{{ pagination.links }}
 			</div>

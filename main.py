@@ -54,34 +54,28 @@ def showLenses():
 	# array to hold lens objects separated in groups of three
 	lenses = []
 	if (brand == 'all' and style == 'all'):
-		x = 0
-		while x < 12:
-			lenses.append(session.query(Lens).order_by(Lens.name).limit(3).offset(offset + x))
-			x += 3
+		lenses = session.query(Lens).order_by(Lens.name).limit(12).offset(offset)
 		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).scalar()
 		# count total lenses visible on this page
 		remaining = rows - (page - 1) * 12
 	elif (brand == 'all' and style != 'all'):
-		x = 0
-		while x < 12:
-			lenses.append(session.query(Lens).filter_by(style=style).order_by(Lens.name).limit(3).offset(offset + x))
-			x += 3
+		lenses = session.query(Lens).filter_by(style=style).order_by(Lens.name).limit(12).offset(offset)
+		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).filter_by(style=style).scalar()
+		# count total lenses visible on this page
 		remaining = rows - (page - 1) * 12
 	elif (brand != 'all' and style == 'all'):
-		x = 0
-		while x < 12:
-			lenses.append(session.query(Lens).filter_by(brand=brand).order_by(Lens.name).limit(3).offset(offset + x))
-			x += 3
+		lenses = session.query(Lens).filter_by(brand=brand).order_by(Lens.name).limit(12).offset(offset)
+		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).scalar()
+		# count total lenses visible on this page
 		remaining = rows - (page - 1) * 12
 	else:
-		x = 0
-		while x < 12:
-			lenses.append(session.query(Lens).filter_by(brand=brand).filter_by(style=style).order_by(Lens.name).limit(3).offset(offset + x))
-			x += 3
+		lenses = session.query(Lens).filter_by(brand=brand).filter_by(style=style).order_by(Lens.name).limit(12).offset(offset)
+		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).filter_by(style=style).scalar()
+		# count total lenses visible on this page
 		remaining = rows - (page - 1) * 12
 	brands = []
 	for value in session.query(Lens.brand).distinct():
@@ -91,7 +85,7 @@ def showLenses():
 		styles.append(value[0])
 	msg = 'Results <b>{start}</b> - <b>{end}</b> of <b>{found}</b> {record_name}'
 	pagination = Pagination(page=page, total=rows, record_name='lenses', found=rows, css_framework='bootstrap3', display_msg=msg, per_page=12)
-	return render_template('lenses.html', lenses1=lenses[0], lenses2=lenses[1], lenses3=lenses[2], lenses4=lenses[3], remaining=remaining, pagination=pagination, brands=brands, styles=styles)
+	return render_template('lenses.html', lenses=lenses, remaining=remaining, pagination=pagination, brands=brands, styles=styles)
 
 
 if __name__ == '__main__':
