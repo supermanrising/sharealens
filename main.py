@@ -37,28 +37,55 @@ def showHome():
 
 @app.route('/lenses')
 def showLenses():
-	search = True
-	brand = request.args['brand']
-	style = request.args['style']
+	try:
+		brand = request.args['brand']
+	except ValueError:
+		brand = 'all'
+	try:
+		style = request.args['style']
+	except ValueError:
+		style = 'all'
 	try:
 		page = int(request.args.get('page', 1))
 	except ValueError:
 		page = 1
-	offset = (page - 1) * 10
+	# offset variable is current page number * results per page
+	offset = (page - 1) * 12
+	# array to hold lens objects separated in groups of three
+	lenses = []
 	if (brand == 'all' and style == 'all'):
-		lenses = session.query(Lens).limit(10).offset(offset)
+		x = 0
+		while x < 12:
+			lenses.append(session.query(Lens).order_by(Lens.name).limit(3).offset(offset + x))
+			x += 3
+		# count total rows.  Used for pagination
 		rows = session.query(func.count(Lens.id)).scalar()
+		# count total lenses visible on this page
+		remaining = rows - (page - 1) * 12
 	elif (brand == 'all' and style != 'all'):
-		lenses = session.query(Lens).filter_by(style=style).all()
+		x = 0
+		while x < 12:
+			lenses.append(session.query(Lens).filter_by(style=style).order_by(Lens.name).limit(3).offset(offset + x))
+			x += 3
 		rows = session.query(func.count(Lens.id)).filter_by(style=style).scalar()
+		remaining = rows - (page - 1) * 12
 	elif (brand != 'all' and style == 'all'):
-		lenses = session.query(Lens).filter_by(brand=brand).all()
+		x = 0
+		while x < 12:
+			lenses.append(session.query(Lens).filter_by(brand=brand).order_by(Lens.name).limit(3).offset(offset + x))
+			x += 3
 		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).scalar()
+		remaining = rows - (page - 1) * 12
 	else:
-		lenses = session.query(Lens).filter_by(brand=brand).filter_by(style=style).all()
+		x = 0
+		while x < 12:
+			lenses.append(session.query(Lens).filter_by(brand=brand).filter_by(style=style).order_by(Lens.name).limit(3).offset(offset + x))
+			x += 3
 		rows = session.query(func.count(Lens.id)).filter_by(brand=brand).filter_by(style=style).scalar()
-	pagination = Pagination(page=page, total=rows, search=search, record_name='lenses', found=rows, alignment='right')
-	return render_template('lenses.html', lenses=lenses, pagination=pagination)
+		remaining = rows - (page - 1) * 12
+	msg = 'Results <b>{start}</b> - <b>{end}</b> of <b>{found}</b> {record_name}'
+	pagination = Pagination(page=page, total=rows, record_name='lenses', found=rows, css_framework='bootstrap3', display_msg=msg, per_page=12)
+	return render_template('lenses.html', lenses1=lenses[0], lenses2=lenses[1], lenses3=lenses[2], lenses4=lenses[3], remaining=remaining, pagination=pagination)
 
 
 if __name__ == '__main__':

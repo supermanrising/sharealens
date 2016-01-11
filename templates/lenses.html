@@ -1,4 +1,5 @@
 {% extends "main.html" %}
+{% block title %}Search Results - Share A Lens{% endblock %}
 {% block content %}
 	<!-- Navigation -->
 	<nav class="navbar navbar-default navbar-white">
@@ -41,17 +42,62 @@
 			<div class="col-sm-2">
 			</div>
 			<div class="col-sm-10">
-				<h2 class="text-center featured-title">Results</h2>	
-				{{ pagination.info }}
-				{{ pagination.links }}
-				<div class="row">			
-					{% for lens in lenses %}
-					<div class="col-sm-4">
-						<h6>RESULT</h6>
-						Name: {{lens.name}}<br>Brand: {{lens.brand}}<br>Type: {{lens.style}}
+				<div class="row">
+					<h2 class="text-center">Search Results</h2>
+				</div>
+				{% if remaining > 0 %}
+				<div class="row">
+					<div class="col-sm-6">
+						{{ pagination.info }}
 					</div>
+					<div class="col-sm-6">
+						{{ pagination.links }}
+					</div>
+				</div>
+				<div class="row result-row">			
+					{% for lens in lenses1 %}
+						<div class="search-result col-sm-4">
+							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
+							<p>{{lens.name}}</p>
+						</div>
 					{% endfor %}
 				</div>
+				{% else %}
+					<p class="text-center">No Results</p>
+				{% endif %}
+				{% if remaining > 3 %}
+				<div class="row result-row">			
+					{% for lens in lenses2 %}
+						<div class="search-result col-sm-4">
+							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
+							<p>{{lens.name}}</p>
+						</div>
+					{% else %}
+					{% endfor %}
+				</div>
+				{% endif %}
+				{% if remaining > 6 %}
+				<div class="row result-row">			
+					{% for lens in lenses3 %}
+						<div class="search-result col-sm-4">
+							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
+							<p>{{lens.name}}</p>
+						</div>
+					{% else %}
+					{% endfor %}
+				</div>
+				{% endif %}
+				{% if remaining > 9 %}
+				<div class="row result-row">			
+					{% for lens in lenses4 %}
+						<div class="search-result col-sm-4">
+							<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
+							<p>{{lens.name}}</p>
+						</div>
+					{% else %}
+					{% endfor %}
+				</div>
+				{% endif %}
 				{{ pagination.links }}
 			</div>
 		</div>
