@@ -17,6 +17,9 @@
 	<meta property="og:description" content="Borrow a lens from a local photographer">
 	<!--<meta property="og:image" content="">-->
 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="//apis.google.com/js/platform.js?onload=start"> </script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
 <body>
 	{% block content %}
@@ -30,12 +33,12 @@
 						<div class="container-fluid">
 							<div class="row">
 								<div class="col-xs-12">
-									<h2 class="modal-heading">Welcome Back!</h2>
+									<h2 class="modal-heading" id="modal-heading">Welcome Back!</h2>
 									<h3 class="text-center modal-sub">Sign in to your Share-A-Lens Account</h3>
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-sm-6">
+							<div class="row login-buttons">
+								<div class="col-xs-6">
 									<!-- GOOGLE PLUS SIGN IN BUTTON-->
 									<div id="googleSignIn">
 										<span class="g-signin"
@@ -45,29 +48,27 @@
 											data-accesstype="offline"
 											data-cookiepolicy="single_host_origin"
 											data-callback="signInCallback"
-											data-approvalprompt="force">
+											data-approvalprompt="force"
+											data-theme="dark">
 										</span>
 									</div>
-									<div id="result"></div>
 									<!--END GOOGLE PLUS SIGN IN BUTTON -->
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="login-footer">
-						<p>New to Share-A-Lens?  Create an account</p>
+						<p onclick="setSignUp()">New to Share-A-Lens?  <u>Create an account</u></p>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script src="//apis.google.com/js/platform.js?onload=start"> </script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 	<!-- GOOGLE PLUS SIGN IN CALLBACK -->
 	<script>
 		var state;
-		function generateState() {
+		var next;
+		function generateState(url) {
 			$.ajax({
 				type: 'GET',
 				url: '/getState',
@@ -77,12 +78,29 @@
 					console.log(state);
 				}
 			});
+			next = url;
+		}
+
+		function setSignUp() {
+			$('#modal-heading').text('Sign up to use all of Share-A-Lens');
+			$('.modal-sub').text('Sign up to rent lenses or make money of your camera gear.')
+			$('.login-footer').html('<p onclick="setLogin()">Already have an account? <u>Login</u></p>')
+		}
+
+		function setLogin() {
+			$('#modal-heading').text('Welcome Back!');
+			$('.modal-sub').text('Sign in to your Share-A-Lens Account.')
+			$('.login-footer').html('<p onclick="setSignUp()">New to Share-A-Lens?  Create an account</p>')
 		}
 
 		function signInCallback(authResult) {
 			if (authResult.code) {
 				// Hide the sign-in button now that the user is authorized
-				$('#signInButton').attr('style', 'display: none');
+				$('.login-buttons').attr('style', 'display: none');
+				$('.login-footer').attr('style', 'display: none');
+				$('#modal-heading').attr('style', 'margin-bottom: 50px');
+				$('#modal-heading').text('Please Wait...');
+				$('.modal-sub').attr('style', 'display: none');
 				// Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
 				$.ajax({
 					type: 'POST',
@@ -94,10 +112,13 @@
 						console.log(result);
 						// Handle or verify the server response if necessary.
 						if (result) {
-							$('#result').html('Login Successful!</br></br>Redirecting...');
+							$('#modal-heading').attr('style', 'margin-bottom: 20px');
+							$('#modal-heading').text('Login Successful!');
+							$('.modal-sub').attr('style', 'display: block');
+							$('.modal-sub').text('Redirecting...');
 							setTimeout(function() {
-								window.location.href = "/";
-							}, 4000);
+								window.location.href = next;
+							}, 3000);
 						}
 					}
 				});

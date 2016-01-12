@@ -13,7 +13,6 @@ h1 {
 	font-family: "Roboto", sans-serif;
 	font-size: 72px;
 	font-weight: 600;
-	color: #fff;
 	text-transform: uppercase;
 }
 
@@ -60,6 +59,7 @@ p {
 .hero-text {
 	margin-top: 130px;
 	margin-bottom: 3px;
+	color: #fff;
 }
 
 .hero-sub {
@@ -95,7 +95,7 @@ p {
 	color: #888;
 	font-weight: 100;
 	font-family: "Lato", sans-serif;
-	font-size: 65px;
+	font-size: 55px;
 	text-align: center;
 	margin-top: 70px;
 }
@@ -127,12 +127,21 @@ p {
 }
 
 .related-lens {
-	margin-bottom: 20px;
+	margin-bottom: 30px;
+	margin-top: 10px;
 	font-size: 15px;
 }
 
 .copyright {
 	margin-bottom: 0;
+}
+
+.rent-heading {
+	font-weight: 400;
+	font-size: 40px;
+	color: #6c6c6c;
+	text-transform: none;
+	margin: 40px 0 50px 0;
 }
 
 /***************
@@ -241,6 +250,7 @@ BOOTSTRAP MODS
 	border-bottom-color: #ccc;
 	padding: 10px 0;
 	border-radius: 0;
+	margin-bottom: 0;
 }
 
 .navbar-white .navbar-nav > li > a {
@@ -285,6 +295,10 @@ BOOTSTRAP MODS
 	width: 100%;
 	position: relative;
 	height: 100%;
+}
+
+.bottom-20 {
+	margin-bottom: 20px;
 }
 
 /***************
@@ -395,7 +409,7 @@ FORM STYLES
 
 .ghost-submit {
 	color: #fff;
-	font-size: 16px;
+	font-size: 20px;
 	text-align: center;
 	width: 100%;
 	padding: 9px 12px;
@@ -412,6 +426,91 @@ FORM STYLES
 	color: #fff;
 	background-color: rgb(255,116,120);
 	transition: background-color 0.1s ease-in;
+}
+
+.input-line {
+	width: 100%;
+	margin-bottom: 20px;
+	font-weight: 300;
+	font-size: 30px;
+	background: transparent;
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+	border-bottom: 1px solid #6c6c6c;
+	border-radius: 0;
+	padding-bottom: 5px;
+}
+
+.input-line:focus {
+	outline: none;
+}
+
+.input-group {
+	margin-bottom: 20px;
+}
+
+.input-square {
+	width: 100%;
+	margin-bottom: 0 !important;
+	font-weight: 300;
+	font-size: 18px;
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+	padding: 10px;
+	background-color: #f5f5f5;
+}
+
+.input-square:focus {
+	outline: none;
+}
+
+.input-group-addon {
+	border: 2px solid #f5f5f5;
+	background-color: #fff;
+}
+
+label {
+	font-weight: 300;
+	font-size: 22px;
+	margin-bottom: 10px;
+}
+
+input[type="text"] {
+	margin-bottom: 20px;
+}
+
+.label-text {
+	font-weight: 400;
+	font-size: 17px;
+	position: relative;
+	top: -6px;
+	left: 5px;
+}
+
+.radio {
+	margin-left: 30px;
+}
+
+.upload-file {
+	background: url(img/image-upload-faded.png) no-repeat;
+	max-width: 150px;
+	margin: 0 auto;
+	background-position: center;
+}
+
+.upload-file:hover {
+	background: url(img/image-upload.png) no-repeat;
+	background-position: center;
+}
+
+.upload-file input {
+	filter: alpha(opacity=0);
+	opacity: 0;
+	height: 100px;
+	cursor: pointer;
+	max-width: 150px;
 }
 
 /***************
@@ -562,12 +661,29 @@ td {
 .login-footer p {
 	margin-bottom: 10px;
 	font-size: 14px;
+	cursor: pointer;
+}
+
+.login-buttons {
+	margin: 25px 0 50px 0;
 }
 
 #googleSignIn {
 	max-width: 200px;
 	float: right;
 	margin-right: 30px;
+}
+
+.top-20 {
+	margin-top: 20px;
+}
+
+.top-40 {
+	margin-top: 40px;
+}
+
+.bottom-20 {
+	margin-bottom: 20px !important;
 }
 
 @media screen and (max-width: 767px) {

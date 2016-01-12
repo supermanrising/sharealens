@@ -3,41 +3,11 @@
 {% block content %}
 	<!-- Navigation -->
 	<nav class="navbar navbar-default navbar-white">
-		<div class="container-fluid">
-		    <!-- Brand and toggle get grouped for better mobile display -->
-		    <div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="{{ url_for('showHome') }}">
-					<img alt="Share A Lens Logo" src="{{ url_for('static', filename='img/brand-sm.png') }}" class="logo">
-				</a>
-			</div>
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#" class="button-nav-link">Rent Your Gear</a></li>
-					<li><a href="#">Sign Up</a></li>
-					<li><a href="#">Log In</a></li>
-					<!--<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="#">Action</a></li>
-							<li><a href="#">Another action</a></li>
-							<li><a href="#">Something else here</a></li>
-							<li role="separator" class="divider"></li>
-							<li><a href="#">Separated link</a></li>
-						</ul>
-					</li>-->
-				</ul>
-			</div><!-- /.navbar-collapse -->
-		</div><!-- /.container-fluid -->
+		{% include 'navbar.html' %}
 	</nav>
 	<!-- End Navigation -->
 	<div class="container">
-		<div class="row">
+		<div class="row top-40">
 			<div class="col-sm-5">
 				<div class="helper">
 					<img src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}" alt="{{lens.name}}" class="img-responsive lens-img">
@@ -48,7 +18,7 @@
 				<ul class="lens-details">
 					<li><p>Brand: <span>{{lens.brand}}</span></p></li>
 					<li><p>Type: <span>{{lens.style}}</span></p></li>
-					<li><p>Focal Length: <span>{{lens.zoom_min}} {% if lens.zoom_min != lens.zoom_max %}- {{lens.zoom_max}}{% endif %}</span></p></li>
+					<li><p>Focal Length: <span>{{lens.zoom_min}}mm {% if lens.zoom_min != lens.zoom_max %}- {{lens.zoom_max}}mm{% endif %}</span></p></li>
 					<li><p>Aperture: <span>F/{{lens.aperture}}</span></p></li>
 				</ul>
 				<div class="pricing">
@@ -58,15 +28,15 @@
 						</tr>
 						<tr>
 							<td>Per day</td>
-							<td class="price">{{lens.price_per_day}}</td>
+							<td class="price">${{lens.price_per_day}}</td>
 						</tr>
 						<tr>
 							<td>Per week</td>
-							<td class="price">{{lens.price_per_week}}</td>
+							<td class="price">${{lens.price_per_week}}</td>
 						</tr>
 						<tr>
 							<td>Per month</td>
-							<td class="price">{{lens.price_per_month}}</td>
+							<td class="price">${{lens.price_per_month}}</td>
 						</tr>
 					</table>
 				</div>
@@ -91,11 +61,5 @@
 			{% endfor %}
 		</div>
 	</div>
-	<div class="footer">
-		<div class="container">
-			<div class="col-xs-12 text-center">
-				<p class="copyright">Copyright 2015 Share-a-lens</p>
-			</div>
-		</div>
-	</div>
+	{% include 'footer.html' %}
 {% endblock %}

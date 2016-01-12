@@ -1,0 +1,122 @@
+{% extends "main.html" %}
+{% block title %}Rent Your Gear - Share A Lens{% endblock %}
+{% block content %}
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-white">
+		{% include 'navbar.html' %}
+	</nav>
+	<!-- End Navigation -->
+	<form action="{{url_for('uploadLens')}}" method="POST" role="form" enctype="multipart/form-data">
+		<div class="container-fluid off-white">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<h1 class="rent-heading text-center">Rent Your Gear</h1>
+					<div class="upload-file">
+						<input type="file" name="file">
+					</div>
+					<div class="form-group">
+						<input type="text" maxlength="350" class="input-line" name="name" placeholder="Title" autofocus>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<div class="form-group top-20">
+						<label for="brand">Brand:</label>
+						<input type="text" maxlength="50" class="input-square bottom-20" name="brand" placeholder="Lens brand">
+
+						<label for="style">Lens Type:</label>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Zoom" class="lens-type-radio"><span class="label-text">Zoom</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Macro" class="lens-type-radio"><span class="label-text">Macro</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Telephoto" class="lens-type-radio"><span class="label-text">Telephoto</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Prime" class="lens-type-radio" id="prime"><span class="label-text">Prime</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Wide Angle" class="lens-type-radio"><span class="label-text">Wide Angle</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Tilt-Shift" class="lens-type-radio"><span class="label-text">Tilt-Shift</span>
+							</label>
+						</div>
+						<div class="radio bottom-20">
+							<label>
+								<input type="radio" name="style" value="Fisheye" class="lens-type-radio"><span class="label-text">Fisheye</span>
+							</label>
+						</div>
+
+						<label for="min-zoom" id="min-zoom">Minimum Focal Length:</label>
+						<div class="input-group">
+							<input type="text" class="input-square" maxlength="10" name="min-zoom" placeholder="Example: 18">
+							<div class="input-group-addon">mm</div>
+						</div>
+
+						<label for="max-zoom" id="max-zoom">Maximum Focal Length:</label>
+						<div class="input-group" id="max-zoom-input">
+							<input type="text" class="input-square" maxlength="10" name="max-zoom" placeholder="Example: 200">
+							<div class="input-group-addon">mm</div>
+						</div>
+
+						<label for="aperture">Aperture:</label>
+						<div class="input-group">
+							<div class="input-group-addon">F/</div>
+							<input type="text" class="input-square" maxlength="10" name="aperture" placeholder="Example: 1.8">
+						</div>
+
+						<label for="price-day">Price Per Day:</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input type="text" class="input-square" maxlength="10" name="price-day" placeholder="Price in $">
+						</div>
+
+						<label for="price-week">Price Per Week:</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input type="text" class="input-square" maxlength="10" name="price-week" placeholder="Price in $">
+						</div>
+
+						<label for="price-month">Price Per Month:</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input type="text" class="input-square" maxlength="10" name="price-month" placeholder="Price in $">
+						</div>
+
+						<button type="submit" class="ghost-submit top-20 bottom-20" id="submit" type="submit">Upload Lens</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	{% include 'footer.html' %}
+	<script>
+		$('.lens-type-radio').click(function() {
+			if($('#prime').is(':checked')) { 
+				$('#max-zoom').hide();
+				$('#max-zoom-input').hide();
+				$('#min-zoom').text('Focal Length');
+			} else {
+				$('#max-zoom').show();
+				$('#max-zoom-input').show();
+			}
+		});
+	</script>
+{% endblock %}

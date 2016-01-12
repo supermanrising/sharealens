@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask import session as login_session
 from sqlalchemy import create_engine
@@ -17,7 +18,13 @@ import json
 from flask import make_response
 import requests
 
+# FOR UPLOADING PHOTOS
+from werkzeug import secure_filename
+UPLOAD_FOLDER = 'static/lens-img'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
@@ -28,6 +35,10 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind = engine)
 session = DBSession()
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def showHome():
@@ -53,9 +64,9 @@ def showHome():
 @app.route('/lenses')
 def showLenses():
 	if 'username' not in login_session:
-		loggedIn = false
+		loggedIn = False
 	else:
-		loggedIn = true
+		loggedIn = True
 	try:
 		brand = request.args['brand']
 	except ValueError:
@@ -102,14 +113,46 @@ def showLenses():
 @app.route('/lens/<int:lens_id>')
 def showLens(lens_id):
 	if 'username' not in login_session:
-		loggedIn = false
+		loggedIn = False
 	else:
-		loggedIn = true
+		loggedIn = True
 	lens = session.query(Lens).filter_by(id=lens_id).one()
 	brand = lens.brand
 	style = lens.style
 	related = session.query(Lens).filter_by(brand=brand).filter_by(style=style).limit(5)
 	return render_template('lens.html', lens=lens, related=related, user=loggedIn)
+
+
+@app.route('/rent-your-gear', methods = ['GET', 'POST'])
+def uploadLens():
+	if 'username' not in login_session:
+		loggedIn = False
+	else:
+		loggedIn = True
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		newLens = Lens(
+			name = request.form['name'],
+			picture = filename,
+			user_id = login_session['user_id'],
+			brand = request.form['brand'],
+			style = request.form['style'],
+			zoom_min = request.form['min-zoom'],
+			zoom_max = request.form['max-zoom'],
+			aperture = request.form['aperture'],
+			price_per_day = request.form['price-day'],
+			price_per_week = request.form['price-week'],
+			price_per_month = request.form['price-month']
+		)
+		session.add(newLens)
+		session.commit()
+		flash("New Lens Created")
+		return redirect(url_for('showLens', lens_id = newLens.id))
+	else:
+		return render_template('rent-your-gear.html', user=loggedIn)
 
 
 @app.route('/getState')
