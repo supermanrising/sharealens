@@ -93,7 +93,10 @@ def showLenses():
 @app.route('/lens/<int:lens_id>')
 def showLens(lens_id):
 	lens = session.query(Lens).filter_by(id=lens_id).one()
-	return render_template('lens.html', lens=lens)
+	brand = lens.brand
+	style = lens.style
+	related = session.query(Lens).filter_by(brand=brand).filter_by(style=style).limit(5)
+	return render_template('lens.html', lens=lens, related=related)
 
 
 if __name__ == '__main__':

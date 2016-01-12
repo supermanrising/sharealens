@@ -28,14 +28,12 @@ h3 {
 	font-family: "Roboto", sans-serif;
 	font-size: 20px;
 	font-weight: 500;
-	color: #fff;
 }
 
 h4 {
 	font-family: "Roboto", sans-serif;
 	font-size: 25px;
 	font-weight: 500;
-	color: #fff;
 	text-transform: uppercase;
 }
 
@@ -43,6 +41,10 @@ h5 {
 	font-family: "Roboto", sans-serif;
 	font-size: 16px;
 	font-weight: 500;
+}
+
+.featured-text h4,
+.featured-text h5 {
 	color: #fff;
 }
 
@@ -63,6 +65,46 @@ p {
 .hero-sub {
 	margin-bottom: 30px;
 	margin-top: 0;
+	color: #fff;
+}
+
+.vertical-alignment-helper {
+	display: table;
+	height: 100%;
+	width: 100%;
+	pointer-events: none; /* This makes sure that we can still click outside of the modal to close it */
+}
+
+.vertical-align-center {
+	/* To center vertically */
+	display: table-cell;
+	vertical-align: middle;
+	pointer-events: none;
+}
+
+.modal-content {
+	/* Bootstrap sets the size of the modal in the modal-dialog class, we need to inherit it */
+	width: inherit;
+	height: inherit;
+	/* To center horizontally */
+	margin: 0 auto;
+	pointer-events: all;
+}
+
+.modal-heading {
+	color: #888;
+	font-weight: 100;
+	font-family: "Lato", sans-serif;
+	font-size: 65px;
+	text-align: center;
+	margin-top: 70px;
+}
+
+.modal-sub {
+	font-weight: 300;
+	font-style: italic;
+	font-family: "Lato", sans-serif;
+	margin-bottom: 60px;
 }
 
 .featured-link:hover {
@@ -78,6 +120,15 @@ p {
 
 .table-head p {
 	font-weight: 400;
+}
+
+.related-title {
+	margin-bottom: 40px;
+}
+
+.related-lens {
+	margin-bottom: 20px;
+	font-size: 15px;
 }
 
 .copyright {
@@ -106,6 +157,13 @@ IMAGES
     left: 0;  
     right: 0;  
     margin: auto;
+}
+
+.related-img {
+	max-width: 100%;
+	max-height: 150px;
+	min-height: 150px;
+	margin: 0 auto;
 }
 
 /***************
@@ -495,6 +553,15 @@ td {
 	padding: 8px;
 	text-align: center;
 	border: 1px solid #ccc;
+}
+
+.login-footer {
+	text-align: center;
+}
+
+.login-footer p {
+	margin-bottom: 10px;
+	font-size: 14px;
 }
 
 @media screen and (max-width: 767px) {

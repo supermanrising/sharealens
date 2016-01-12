@@ -19,7 +19,6 @@
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="#" class="button-nav-link">Rent Your Gear</a></li>
-					<li><a href="#">Help</a></li>
 					<li><a href="#">Sign Up</a></li>
 					<li><a href="#">Log In</a></li>
 					<!--<li class="dropdown">
@@ -37,45 +36,60 @@
 		</div><!-- /.container-fluid -->
 	</nav>
 	<!-- End Navigation -->
-	<!-- CONTENT -->
 	<div class="container">
-		<div class="col-sm-5">
-			<div class="helper">
-				<img src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}" alt="{{lens.name}}" class="img-responsive lens-img">
+		<div class="row">
+			<div class="col-sm-5">
+				<div class="helper">
+					<img src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}" alt="{{lens.name}}" class="img-responsive lens-img">
+				</div>
+			</div>
+			<div class="col-sm-6 col-sm-offset-1">
+				<h2>{{lens.name}}</h2>
+				<ul class="lens-details">
+					<li><p>Brand: <span>{{lens.brand}}</span></p></li>
+					<li><p>Type: <span>{{lens.style}}</span></p></li>
+					<li><p>Focal Length: <span>{{lens.zoom_min}} {% if lens.zoom_min != lens.zoom_max %}- {{lens.zoom_max}}{% endif %}</span></p></li>
+					<li><p>Aperture: <span>F/{{lens.aperture}}</span></p></li>
+				</ul>
+				<div class="pricing">
+					<table>
+						<tr>
+							<td colspan="2" class="table-head"><p>PRICING</p></td>
+						</tr>
+						<tr>
+							<td>Per day</td>
+							<td class="price">{{lens.price_per_day}}</td>
+						</tr>
+						<tr>
+							<td>Per week</td>
+							<td class="price">{{lens.price_per_week}}</td>
+						</tr>
+						<tr>
+							<td>Per month</td>
+							<td class="price">{{lens.price_per_month}}</td>
+						</tr>
+					</table>
+				</div>
+				<div class="button">
+					<a href="#" class="ghost-submit-link">Request Rental</a>
+				</div>
 			</div>
 		</div>
-		<div class="col-sm-6 col-sm-offset-1">
-			<h2>{{lens.name}}</h2>
-			<ul class="lens-details">
-				<li><p>Brand: <span>{{lens.brand}}</span></p></li>
-				<li><p>Type: <span>{{lens.style}}</span></p></li>
-				<li><p>Focal Length: <span>{{lens.zoom_min}} {% if lens.zoom_min != lens.zoom_max %}- {{lens.zoom_max}}{% endif %}</span></p></li>
-				<li><p>Aperture: <span>F/{{lens.aperture}}</span></p></li>
-			</ul>
-			<div class="pricing">
-				<table>
-					<tr>
-						<td colspan="2" class="table-head"><p>PRICING</p></td>
-					</tr>
-					<tr>
-						<td>Per day</td>
-						<td class="price">{{lens.price_per_day}}</td>
-					</tr>
-					<tr>
-						<td>Per week</td>
-						<td class="price">{{lens.price_per_week}}</td>
-					</tr>
-					<tr>
-						<td>Per month</td>
-						<td class="price">{{lens.price_per_month}}</td>
-					</tr>
-				</table>
-			</div>
-			<div class="button">
-				<a href="#" class="ghost-submit-link">Request Rental</a>
+		<div class="row">
+			<div class="col-xs-12">
+				<h3 class="related-title">Related Lenses</h3>
 			</div>
 		</div>
-	</div>
+		<div class="row">
+			{% for lens in related %}
+				<div class="col-sm-2{% if loop.first %} col-sm-offset-1{% endif %}">
+					<a href="{{url_for('showLens', lens_id = lens.id)}}">
+						<img src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}" alt="{{lens.name}}" class="img-responsive related-img">
+						<p class="related-lens">{{lens.name}}</p>
+					</a>
+				</div>
+			{% endfor %}
+		</div>
 	</div>
 	<div class="footer">
 		<div class="container">
