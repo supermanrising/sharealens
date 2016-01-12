@@ -31,6 +31,11 @@ session = DBSession()
 
 @app.route('/')
 def showHome():
+	if 'username' not in login_session:
+		loggedIn = False
+	else:
+		loggedIn = True
+	print loggedIn
 	totalLenses = session.query(func.count(Lens.id)).scalar()
 	featured = []
 	for num in range(1,4):
@@ -42,11 +47,15 @@ def showHome():
 	styles = []
 	for value in session.query(Lens.style).distinct():
 		styles.append(value[0])
-	return render_template('index.html', featured=featured, brands=brands, styles=styles)
+	return render_template('index.html', featured=featured, brands=brands, styles=styles, user=loggedIn)
 
 
 @app.route('/lenses')
 def showLenses():
+	if 'username' not in login_session:
+		loggedIn = false
+	else:
+		loggedIn = true
 	try:
 		brand = request.args['brand']
 	except ValueError:
@@ -87,16 +96,213 @@ def showLenses():
 		styles.append(value[0])
 	msg = 'Results <b>{start}</b> - <b>{end}</b> of <b>{found}</b> {record_name}'
 	pagination = Pagination(page=page, total=rows, record_name='lenses', found=rows, css_framework='bootstrap3', display_msg=msg, per_page=12)
-	return render_template('lenses.html', lenses=lenses, rows=rows, pagination=pagination, brands=brands, styles=styles)
+	return render_template('lenses.html', lenses=lenses, rows=rows, pagination=pagination, brands=brands, styles=styles, user=loggedIn)
 
 
 @app.route('/lens/<int:lens_id>')
 def showLens(lens_id):
+	if 'username' not in login_session:
+		loggedIn = false
+	else:
+		loggedIn = true
 	lens = session.query(Lens).filter_by(id=lens_id).one()
 	brand = lens.brand
 	style = lens.style
 	related = session.query(Lens).filter_by(brand=brand).filter_by(style=style).limit(5)
-	return render_template('lens.html', lens=lens, related=related)
+	return render_template('lens.html', lens=lens, related=related, user=loggedIn)
+
+
+@app.route('/getState')
+def generateState():
+	state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+	login_session['state'] = state
+	return state
+
+
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+	# Validate state token
+	if request.args.get('state') != login_session['state']:
+		response = make_response(json.dumps('Invalid state parameter.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	# Obtain authorization code
+	# this was passed here as POST data by AJAX request in login.html
+	# data: authResult.code
+	code = request.data
+
+	try:
+		# Upgrade the authorization code into a credentials object
+		oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+		oauth_flow.redirect_uri = 'postmessage'
+		credentials = oauth_flow.step2_exchange(code)
+	except FlowExchangeError:
+		response = make_response(
+			json.dumps('Failed to upgrade the authorization code.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+	# Check that the access token is valid.
+	access_token = credentials.access_token
+	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+			% access_token)
+	h = httplib2.Http()
+	result = json.loads(h.request(url, 'GET')[1])
+	# If there was an error in the access token info, abort.
+	if result.get('error') is not None:
+		print result.get('error')
+		response = make_response(json.dumps(result.get('error')), 500)
+		response.headers['Content-Type'] = 'application/json'
+
+	# Verify that the access token is used for the intended user.
+	gplus_id = credentials.id_token['sub']
+	if result['user_id'] != gplus_id:
+		response = make_response(
+			json.dumps("Token's user ID doesn't match given user ID."), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+	# Verify that the access token is valid for this app.
+	if result['issued_to'] != CLIENT_ID:
+		response = make_response(
+			json.dumps("Token's client ID does not match app's."), 401)
+		print "Token's client ID does not match app's."
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+	stored_credentials = login_session.get('credentials')
+	stored_gplus_id = login_session.get('gplus_id')
+	if stored_credentials is not None and gplus_id == stored_gplus_id:
+		response = make_response(json.dumps('Current user is already connected.'), 200)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+	# Store the access token in the session for later use.
+	login_session['credentials'] = credentials.access_token
+	login_session['gplus_id'] = gplus_id
+
+	# Get user info
+	userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+	params = {'access_token': credentials.access_token, 'alt': 'json'}
+	answer = requests.get(userinfo_url, params=params)
+
+	data = answer.json()
+
+	login_session['username'] = data['name']
+	login_session['picture'] = data['picture']
+	login_session['email'] = data['email']
+	# ADD PROVIDER TO LOGIN SESSION
+	login_session['provider'] = 'google'
+
+	# if user exists, store user id in login_session
+	# if not, create user
+	user_id = getUserID(login_session['email'])
+	if not user_id:
+		user_id = createUser(login_session)
+	login_session['user_id'] = user_id
+
+	output = ''
+	output += '<h1>Welcome, '
+	output += login_session['username']
+	output += '!</h1>'
+	output += '<img src="'
+	output += login_session['picture']
+	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+	flash("you are now logged in as %s" % login_session['username'])
+	print "done!"
+	return output
+
+
+@app.route('/fbdisconnect')
+def fbdisconnect():
+	facebook_id = login_session['facebook_id']
+	# The access token must me included to successfully logout
+	access_token = login_session['access_token']
+	url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id,access_token)
+	h = httplib2.Http()
+	result = h.request(url, 'DELETE')[1]
+	del login_session['username']
+	del login_session['email']
+	del login_session['picture']
+	del login_session['user_id']
+	del login_session['facebook_id']
+	return "you have been logged out"
+
+
+# DISCONNECT - Revoke a current user's token and reset their login_session
+@app.route('/gdisconnect')
+def gdisconnect():
+	print 'disconnecting'
+	if 'credentials' not in login_session:
+		print 'Access Token is None'
+		response = make_response(json.dumps('Current user not connected.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	access_token = login_session['credentials']
+	print 'In gdisconnect access token is %s', access_token
+	print 'User name is: ' 
+	print login_session['username']
+	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['credentials']
+	h = httplib2.Http()
+	result = h.request(url, 'GET')[0]
+	print 'result is '
+	print result
+	if result['status'] == '200':
+		del login_session['credentials'] 
+		del login_session['gplus_id']
+		del login_session['username']
+		del login_session['email']
+		del login_session['picture']
+		response = make_response(json.dumps('Successfully disconnected.'), 200)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	else:
+		response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+
+# Disconnect based on provider
+@app.route('/logout')
+def disconnect():
+    if 'provider' in login_session:
+    	print login_session['provider']
+        if login_session['provider'] == 'google':
+            gdisconnect()
+        if login_session['provider'] == 'facebook':
+            fbdisconnect()
+        del login_session['provider']
+        flash("You have successfully been logged out.")
+        print 'success'
+        return redirect(url_for('showHome'))
+    else:
+        flash("You were not logged in")
+        return redirect(url_for('showHome'))
+
+
+# User Helper Functions
+def createUser(login_session):
+	newUser = User(
+		name=login_session['username'],
+		email=login_session['email'],
+		picture=login_session['picture'])
+	session.add(newUser)
+	session.commit()
+	user = session.query(User).filter_by(email=login_session['email']).one()
+	return user.id
+
+
+def getUserInfo(user_id):
+	user = session.query(User).filter_by(id=user_id).one()
+	return user
+
+
+def getUserID(email):
+	try:
+		user = session.query(User).filter_by(email=email).one()
+		return user.id
+	except:
+		return None
 
 
 if __name__ == '__main__':

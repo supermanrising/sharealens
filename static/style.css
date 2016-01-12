@@ -104,7 +104,7 @@ p {
 	font-weight: 300;
 	font-style: italic;
 	font-family: "Lato", sans-serif;
-	margin-bottom: 60px;
+	margin-bottom: 40px;
 }
 
 .featured-link:hover {
@@ -562,6 +562,12 @@ td {
 .login-footer p {
 	margin-bottom: 10px;
 	font-size: 14px;
+}
+
+#googleSignIn {
+	max-width: 200px;
+	float: right;
+	margin-right: 30px;
 }
 
 @media screen and (max-width: 767px) {
