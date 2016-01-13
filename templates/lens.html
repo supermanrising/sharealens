@@ -44,9 +44,16 @@
 						</tr>
 					</table>
 				</div>
-				<div class="button">
-					<a href="#" class="ghost-submit-link">Request Rental</a>
-				</div>
+				{% if currentuser == lens.user_id %}
+					<div class="button">
+						<a href="{{url_for('editLens', lens_id = lens.id)}}" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-pencil"></span> &nbsp;Edit Lens</a>
+						<a href="#" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete Lens</a>
+					</div>
+				{% else %}
+					<div class="button">
+						<a href="#" class="ghost-submit-link">Request Rental</a>
+					</div>
+				{% endif %}
 			</div>
 		</div>
 		<div class="row">

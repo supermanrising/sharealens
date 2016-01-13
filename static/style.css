@@ -161,6 +161,12 @@ p {
 	font-weight: 300;
 }
 
+.cancel-link {
+	display: block;
+	text-align: center;
+	font-size: 16px;
+}
+
 /***************
 ****************
 IMAGES
@@ -189,6 +195,12 @@ IMAGES
 	max-width: 100%;
 	max-height: 150px;
 	min-height: 150px;
+	margin: 0 auto;
+}
+
+.img-edit {
+	max-width: 120px;
+	display: block;
 	margin: 0 auto;
 }
 
@@ -374,6 +386,12 @@ BUTTONS
 	transition: background-color 0.1s ease-in;
 }
 
+.ghost-half {
+	width: 49%;
+	margin-right: 1%;
+	float: left;
+}
+
 .transparent .button-nav-link {
 	border: 2px solid #fff;
 	color: #fff;
@@ -532,6 +550,18 @@ input[type="text"] {
 	height: 100px;
 	cursor: pointer;
 	max-width: 150px;
+}
+
+.edit-file {
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.edit-file input {
+	margin-left: 50%;
+	position: relative;
+	left: -83px;
+	margin-top: 10px;
 }
 
 /***************

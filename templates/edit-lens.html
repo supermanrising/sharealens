@@ -1,0 +1,143 @@
+{% extends "main.html" %}
+{% block title %}Edit {{lens.name}}{% endblock %}
+{% block content %}
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-white">
+		{% include 'navbar.html' %}
+	</nav>
+	<!-- End Navigation -->
+	<form action="{{url_for('editLens', lens_id=lens.id)}}" method="POST" role="form" enctype="multipart/form-data">
+		<div class="container-fluid off-white">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<h1 class="rent-heading text-center">Edit {{lens.name}}</h1>
+					<div class="edit-file" id="upload-container">
+						<img id="current-img" class="img-edit img-thumbnail" src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}">
+						<input type="file" name="file" id="upload-img">
+						<p class="text-center" id="image-name"></p>
+					</div>
+					<div class="form-group">
+						<input type="text" maxlength="350" class="input-line" name="name" value="{{lens.name}}" autofocus>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<div class="form-group top-20">
+						<label for="brand">Brand:</label>
+						<input type="text" maxlength="50" class="input-square bottom-20" name="brand" value="{{lens.brand}}">
+
+						<label for="style">Lens Type:</label>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Zoom" class="lens-type-radio" {% if lens.style == 'Zoom' %}checked{% endif %}><span class="label-text">Zoom</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Macro" class="lens-type-radio" {% if lens.style == 'Macro' %}checked{% endif %}><span class="label-text">Macro</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Telephoto" class="lens-type-radio" {% if lens.style == 'Telephoto' %}checked{% endif %}><span class="label-text">Telephoto</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Prime" class="lens-type-radio" id="prime" {% if lens.style == 'Prime' %}checked{% endif %}><span class="label-text">Prime</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Wide Angle" class="lens-type-radio" {% if lens.style == 'Wide Angle' %}checked{% endif %}><span class="label-text">Wide Angle</span>
+							</label>
+						</div>
+						<div class="radio">
+							<label>
+								<input type="radio" name="style" value="Tilt-Shift" class="lens-type-radio" {% if lens.style == 'Tilt-Shift' %}checked{% endif %}><span class="label-text">Tilt-Shift</span>
+							</label>
+						</div>
+						<div class="radio bottom-20">
+							<label>
+								<input type="radio" name="style" value="Fisheye" class="lens-type-radio" {% if lens.style == 'Fisheye' %}checked{% endif %}><span class="label-text">Fisheye</span>
+							</label>
+						</div>
+
+						<label for="min-zoom" id="min-zoom">Minimum Focal Length:</label>
+						<div class="input-group">
+							<input type="text" class="input-square" maxlength="10" name="min-zoom" value="{{lens.zoom_min}}">
+							<div class="input-group-addon">mm</div>
+						</div>
+
+						<label for="max-zoom" id="max-zoom">Maximum Focal Length:</label>
+						<div class="input-group" id="max-zoom-input">
+							<input type="text" class="input-square" maxlength="10" name="max-zoom" value="{{lens.zoom_max}}">
+							<div class="input-group-addon">mm</div>
+						</div>
+
+						<label for="aperture">Aperture:</label>
+						<div class="input-group">
+							<div class="input-group-addon">F/</div>
+							<input type="text" class="input-square" maxlength="10" name="aperture" value="{{lens.aperture}}">
+						</div>
+
+						<label for="price-day">Price Per Day:</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input type="text" class="input-square" maxlength="10" name="price-day" value="{{lens.price_per_day}}">
+						</div>
+
+						<label for="price-week">Price Per Week:</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input type="text" class="input-square" maxlength="10" name="price-week" value="{{lens.price_per_week}}">
+						</div>
+
+						<label for="price-month">Price Per Month:</label>
+						<div class="input-group">
+							<div class="input-group-addon">$</div>
+							<input type="text" class="input-square" maxlength="10" name="price-month" value="{{lens.price_per_month}}">
+						</div>
+
+						<button type="submit" class="ghost-submit top-20 bottom-20" id="submit" type="submit">Edit Lens</button>
+						<a href="{{url_for('showLens', lens_id=lens.id)}}" class="cancel-link">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	{% include 'footer.html' %}
+	<script>
+		$("document").ready(function(){
+			$('.lens-type-radio').click(function() {
+				if($('#prime').is(':checked')) { 
+					$('#max-zoom').hide();
+					$('#max-zoom-input').hide();
+					$('#min-zoom').text('Focal Length');
+				} else {
+					$('#max-zoom').show();
+					$('#max-zoom-input').show();
+				}
+			});
+		});
+
+		$("#upload-img").change(function() {
+	        var imagePath = document.getElementById('upload-img').value;
+	        var filename;
+	        if (imagePath) {
+				var startIndex = (imagePath.indexOf('\\') >= 0 ? imagePath.lastIndexOf('\\') : imagePath.lastIndexOf('/'));
+				filename = imagePath.substring(startIndex);
+				if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+					filename = filename.substring(1);
+					$('#image-name').text(filename);
+					$('#current-img').hide();
+					$('#upload-container').removeClass('edit-file');
+					$('#upload-container').addClass('upload-file');
+				}
+			}
+	    });
+	</script>
+{% endblock %}

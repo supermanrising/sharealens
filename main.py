@@ -46,7 +46,6 @@ def showHome():
 		loggedIn = False
 	else:
 		loggedIn = True
-	print loggedIn
 	totalLenses = session.query(func.count(Lens.id)).scalar()
 	featured = []
 	for num in range(1,4):
@@ -116,11 +115,12 @@ def showLens(lens_id):
 		loggedIn = False
 	else:
 		loggedIn = True
+	currentuser = login_session.get('user_id')
 	lens = session.query(Lens).filter_by(id=lens_id).first()
 	brand = lens.brand
 	style = lens.style
 	related = session.query(Lens).filter_by(brand=brand).filter(Lens.id!=lens_id).filter_by(style=style).limit(5)
-	return render_template('lens.html', lens=lens, related=related, user=loggedIn)
+	return render_template('lens.html', lens=lens, related=related, user=loggedIn, currentuser=currentuser)
 
 
 @app.route('/login/<string:next>')
@@ -164,6 +164,49 @@ def uploadLens():
 		return redirect(url_for('showLens', lens_id = newLens.id))
 	else:
 		return render_template('rent-your-gear.html', user=loggedIn)
+
+
+@app.route('/edit/<int:lens_id>', methods = ['GET', 'POST'])
+def editLens(lens_id):
+	if 'username' not in login_session:
+		return redirect(url_for('showLogin', next='rent-your-gear'))
+	else:
+		loggedIn = True
+	lens = session.query(Lens).filter_by(id=lens_id).one()
+	if lens.user_id != login_session['user_id']:
+		return "<script>function myFunction() {alert('You are not authorized to edit this lens');}</script><body onload='myFunction()'>"
+	if request.method == 'POST':
+		if request.files['file']:
+			file = request.files['file']
+			if file and allowed_file(file.filename):
+				filename = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+				lens.picture = filename
+		if request.form['name']:
+			lens.name = request.form['name']
+		if request.form['brand']:
+			lens.brand = request.form['brand']
+		if request.form['style']:
+			lens.style = request.form['style']
+		if request.form['min-zoom']:
+			lens.zoom_min = request.form['min-zoom']
+		if request.form['max-zoom']:
+			lens.zoom_max = request.form['max-zoom']
+		if request.form['aperture']:
+			lens.aperture = request.form['aperture']
+		if request.form['price-day']:
+			lens.price_per_day = request.form['price-day']
+		if request.form['price-week']:
+			lens.price_per_week = request.form['price-week']
+		if request.form['price-month']:
+			lens.price_per_month = request.form['price-month']
+
+		session.add(lens)
+		session.commit()
+		flash("Lens Successfully Edited")
+		return redirect(url_for('showLens', lens_id = lens_id))
+	else:
+		return render_template('edit-lens.html', user=loggedIn, lens=lens)
 
 
 @app.route('/getState')
@@ -307,6 +350,7 @@ def gdisconnect():
 		del login_session['username']
 		del login_session['email']
 		del login_session['picture']
+		del login_session['user_id']
 		response = make_response(json.dumps('Successfully disconnected.'), 200)
 		response.headers['Content-Type'] = 'application/json'
 		return response
