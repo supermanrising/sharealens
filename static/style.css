@@ -468,6 +468,10 @@ FORM STYLES
 	padding: 8px 10px;
 }
 
+.lens-submit {
+	padding: 15px 0;
+}
+
 .input-line {
 	width: 100%;
 	margin-bottom: 20px;

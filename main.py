@@ -20,11 +20,9 @@ import requests
 
 # FOR UPLOADING PHOTOS
 from werkzeug import secure_filename
-UPLOAD_FOLDER = 'static/lens-img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
@@ -142,12 +140,14 @@ def uploadLens():
 		file = request.files['file']
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
+			UPLOAD_FOLDER = 'static/lens-img/' + str(login_session['user_id'])
+			app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 		else:
 			filename = None
 		newLens = Lens(
 			name = request.form['name'],
-			picture = filename,
+			picture = str(login_session['user_id']) + '/' + filename,
 			user_id = login_session['user_id'],
 			brand = request.form['brand'],
 			style = request.form['style'],
@@ -180,8 +180,12 @@ def editLens(lens_id):
 			file = request.files['file']
 			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
+				UPLOAD_FOLDER = 'static/lens-img/' + str(login_session['user_id'])
+				if not os.path.exists(UPLOAD_FOLDER):
+					os.makedirs(UPLOAD_FOLDER)
+				app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-				lens.picture = filename
+				lens.picture = str(login_session['user_id']) + '/' + filename
 		if request.form['name']:
 			lens.name = request.form['name']
 		if request.form['brand']:
