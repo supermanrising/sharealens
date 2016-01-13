@@ -55,6 +55,9 @@
 									</div>
 									<!--END GOOGLE PLUS SIGN IN BUTTON -->
 								</div>
+								<div class="col-xs-6">
+									<a href="javascript:sendTokenToServer()" class="fb-login"><span class="fb-text">Sign In</span></a>
+  								</div>
 							</div>
 						</div>
 					</div>
@@ -124,9 +127,92 @@
 				});
 			} else if (authResult.error) {
 				console.log('There was an error: ' + authResult.error);
+				$('.login-buttons').attr('style', 'display: none');
+				$('.login-footer').attr('style', 'display: none');
+				$('#modal-heading').attr('style', 'margin-bottom: 20px');
+				$('#modal-heading').text('Oops!');
+				$('.modal-sub').attr('style', 'display: block');
+				$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
 			} else {
-				$('#result').html('Failed to make a server-side call. Check your configuration and console.');
+				$('.login-buttons').attr('style', 'display: none');
+				$('.login-footer').attr('style', 'display: none');
+				$('#modal-heading').attr('style', 'margin-bottom: 20px');
+				$('#modal-heading').text('Oops!');
+				$('.modal-sub').attr('style', 'display: block');
+				$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
 			}
+		}
+	</script>
+	<script>
+		window.fbAsyncInit = function() {
+			FB.init({
+				appId		: '174653162891010',
+				cookie 		:true,  // enable cookies to allow the server to access 
+									// the session
+				xfbml		: true,  // parse social plugins on this page
+				version		: 'v2.2' // use version 2.2
+			});
+		};
+				
+		// Load the SDK asynchronously
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+				
+		// Here we run a very simple test of the Graph API after login is
+		// successful.  See statusChangeCallback() for when this call is made.
+		function sendTokenToServer() {
+			FB.login(function(response) {
+				if (response.authResponse) {
+					var access_token = FB.getAuthResponse()['accessToken'];
+					$('.login-buttons').attr('style', 'display: none');
+					$('.login-footer').attr('style', 'display: none');
+					$('#modal-heading').attr('style', 'margin-bottom: 50px');
+					$('#modal-heading').text('Please Wait...');
+					$('.modal-sub').attr('style', 'display: none');
+
+					FB.api('/me', function(response) {
+						console.log('Successful login for: ' + response.name);
+						$.ajax({
+							type: 'POST',
+							url: '/fbconnect?state=' + state,
+							processData: false,
+							data: access_token,
+							contentType: 'application/octet-stream; charset=utf-8',
+							success: function(result) {
+								// Handle or verify the server response if necessary.
+								if (result) {
+									$('#modal-heading').attr('style', 'margin-bottom: 20px');
+									$('#modal-heading').text('Login Successful!');
+									$('.modal-sub').attr('style', 'display: block');
+									$('.modal-sub').text('Redirecting...');
+									setTimeout(function() {
+										window.location.href = next;
+									}, 3000);
+								} else {
+									$('#modal-heading').attr('style', 'margin-bottom: 20px');
+									$('#modal-heading').text('Oops!');
+									$('.modal-sub').attr('style', 'display: block');
+									$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
+								}
+							}
+						});
+					});
+				} else {
+					$('.login-buttons').attr('style', 'display: none');
+					$('.login-footer').attr('style', 'display: none');
+					$('#modal-heading').attr('style', 'margin-bottom: 20px');
+					$('#modal-heading').text('Oops!');
+					$('.modal-sub').attr('style', 'display: block');
+					$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
+				}
+			}, {
+				scope: 'public_profile,email'
+			});
 		}
 	</script>
 </body>

@@ -1,3 +1,14 @@
+@font-face {
+	font-family: 'fontello';
+	src: 	url('fonts/fontello.eot?48500032');
+	src: 	url('fonts/fontello.eot?48500032#iefix') format('embedded-opentype'),
+			url('fonts/fontello.woff?48500032') format('woff'),
+			url('fonts/fontello.ttf?48500032') format('truetype'),
+			url('fonts/fontello.svg?48500032#fontello') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
 body {
 	font-family: "Lato", sans-serif;
 	font-weight: 300;
@@ -418,6 +429,56 @@ BUTTONS
 	transition: background-color 0.1s ease-in;
 }
 
+.login-buttons {
+	margin: 25px 0 50px 0;
+}
+
+#googleSignIn {
+	max-width: 200px;
+	float: right;
+	margin-right: 10px;
+}
+
+.fb-login {
+	display: block;
+	background-color: #43609c;
+	color: #fff;
+	font-family: "Roboto", sans-serif;
+	font-weight: 400;
+	font-size: 12px;
+	position: relative;
+	border-radius: 3px;
+	height: 32px;
+	max-width: 111px;
+	margin-left: 10px;
+}
+
+.fb-login:before {
+	display: inline-block;
+	content: "\E800";
+	font-family: "fontello";
+	border-right: 1px solid #2a3c62;
+	height: 100%;
+	max-width: 20px;
+	position: relative;
+	padding-top: 6px;
+	padding-left: 12px;
+	padding-right: 19px;
+	font-size: 140%;
+}
+
+.fb-text {
+	padding-left: 19px;
+	position: relative;
+	top: -2px;
+}
+
+.fb-login:hover {
+	text-decoration: none;
+	color: #fff;
+	background-color: #4c6db3;
+}
+
 /***************
 ****************
 FORM STYLES
@@ -719,16 +780,6 @@ td {
 	cursor: pointer;
 }
 
-.login-buttons {
-	margin: 25px 0 50px 0;
-}
-
-#googleSignIn {
-	max-width: 200px;
-	float: right;
-	margin-right: 30px;
-}
-
 .top-20 {
 	margin-top: 20px;
 }
@@ -746,6 +797,10 @@ td {
 	position: fixed;
 	top: calc(100% - 62px);
 	right: 0;
+}
+
+.container-padded {
+	margin-bottom: 62px;
 }
 
 @media screen and (max-width: 767px) {

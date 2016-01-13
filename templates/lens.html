@@ -6,7 +6,7 @@
 		{% include 'navbar.html' %}
 	</nav>
 	<!-- End Navigation -->
-	<div class="container">
+	<div class="container {% if related.count() == 0 %}container-padded{% endif %}">
 		<div class="row top-40">
 			{% if lens.picture != None %}
 			<div class="col-sm-5">
@@ -76,7 +76,9 @@
 	</div>
 	{% if related.count() == 0 %}
 		<div class="footer-fixed">
-			{% include 'footer.html' %}
+	{% endif %}
+		{% include 'footer.html' %}
+	{% if related.count() == 0 %}
 		</div>
 	{% endif %}
 {% endblock %}

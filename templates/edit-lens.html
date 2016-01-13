@@ -112,8 +112,13 @@
 	{% include 'footer.html' %}
 	<script>
 		$("document").ready(function(){
+			if ($('#prime').is(':checked')) { 
+				$('#max-zoom').hide();
+				$('#max-zoom-input').hide();
+				$('#min-zoom').text('Focal Length');
+			}
 			$('.lens-type-radio').click(function() {
-				if($('#prime').is(':checked')) { 
+				if ($('#prime').is(':checked')) { 
 					$('#max-zoom').hide();
 					$('#max-zoom-input').hide();
 					$('#min-zoom').text('Focal Length');
