@@ -17,7 +17,7 @@
 			{% if user %}
 			<li><a href="{{ url_for('disconnect') }}">Sign Out</a></li>
 			{% else %}
-			<li><a href="#login" data-toggle="modal" data-target="#login" onclick="generateState('{{request.path}}{% if request.query_string != '' %}?{{request.query_string}}{% endif %}');setSignUp();">Sign Up</a></li>
+			<li><a href="#login" data-toggle="modal" data-target="#login" onclick="generateState('{{request.path}}{% if request.query_string != '' %}?{{request.query_string}}{% endif %}');setSignUp();" id="login-trigger">Sign Up</a></li>
 			<li><a href="#login" data-toggle="modal" data-target="#login" onclick="generateState('{{request.path}}{% if request.query_string != '' %}?{{request.query_string}}{% endif %}');setLogin();">Log In</a></li>
 			{% endif %}
 			<!--<li class="dropdown">

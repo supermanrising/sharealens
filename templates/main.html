@@ -9,7 +9,8 @@
 
 	<!-- Google Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Lato:400,300,100,700,900,300italic,400italic,700italic,900italic" rel="stylesheet">
-	<link href='https://fonts.googleapis.com/css?family=Roboto:700,500,400' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Roboto:700,500,400,300' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
 
 	<!-- Open Graph Meta Tags -->
 	<meta property="og:url" content="http://www.sharealens.com/">
@@ -89,7 +90,7 @@
 		function setLogin() {
 			$('#modal-heading').text('Welcome Back!');
 			$('.modal-sub').text('Sign in to your Share-A-Lens Account.')
-			$('.login-footer').html('<p onclick="setSignUp()">New to Share-A-Lens?  Create an account</p>')
+			$('.login-footer').html('<p onclick="setSignUp()">New to Share-A-Lens?  <u>Create an account</u></p>')
 		}
 
 		function signInCallback(authResult) {

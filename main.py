@@ -123,10 +123,19 @@ def showLens(lens_id):
 	return render_template('lens.html', lens=lens, related=related, user=loggedIn)
 
 
+@app.route('/login/<string:next>')
+def showLogin(next):
+	if 'username' not in login_session:
+		loggedIn = False
+	else:
+		loggedIn = True
+	return render_template('login.html', user=loggedIn, next=next)
+
+
 @app.route('/rent-your-gear', methods = ['GET', 'POST'])
 def uploadLens():
 	if 'username' not in login_session:
-		loggedIn = False
+		return redirect(url_for('showLogin', next='rent-your-gear'))
 	else:
 		loggedIn = True
 	if request.method == 'POST':
@@ -134,6 +143,8 @@ def uploadLens():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		else:
+			filename = None
 		newLens = Lens(
 			name = request.form['name'],
 			picture = filename,
