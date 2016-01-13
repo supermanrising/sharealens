@@ -116,10 +116,10 @@ def showLens(lens_id):
 		loggedIn = False
 	else:
 		loggedIn = True
-	lens = session.query(Lens).filter_by(id=lens_id).one()
+	lens = session.query(Lens).filter_by(id=lens_id).first()
 	brand = lens.brand
 	style = lens.style
-	related = session.query(Lens).filter_by(brand=brand).filter_by(style=style).limit(5)
+	related = session.query(Lens).filter_by(brand=brand).filter(Lens.id!=lens_id).filter_by(style=style).limit(5)
 	return render_template('lens.html', lens=lens, related=related, user=loggedIn)
 
 

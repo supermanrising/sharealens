@@ -12,7 +12,8 @@
 				<div class="col-sm-8 col-sm-offset-2">
 					<h1 class="rent-heading text-center">Rent Your Gear</h1>
 					<div class="upload-file">
-						<input type="file" name="file">
+						<input type="file" name="file" id="upload">
+						<p class="text-center" id="image-name"></p>
 					</div>
 					<div class="form-group">
 						<input type="text" maxlength="350" class="input-line" name="name" placeholder="Title" autofocus>
@@ -108,15 +109,30 @@
 	</form>
 	{% include 'footer.html' %}
 	<script>
-		$('.lens-type-radio').click(function() {
-			if($('#prime').is(':checked')) { 
-				$('#max-zoom').hide();
-				$('#max-zoom-input').hide();
-				$('#min-zoom').text('Focal Length');
-			} else {
-				$('#max-zoom').show();
-				$('#max-zoom-input').show();
-			}
+		$("document").ready(function(){
+			$('.lens-type-radio').click(function() {
+				if($('#prime').is(':checked')) { 
+					$('#max-zoom').hide();
+					$('#max-zoom-input').hide();
+					$('#min-zoom').text('Focal Length');
+				} else {
+					$('#max-zoom').show();
+					$('#max-zoom-input').show();
+				}
+			});
 		});
+
+		$("#upload").change(function() {
+	        var imagePath = document.getElementById('upload').value;
+	        var filename;
+	        if (imagePath) {
+				var startIndex = (imagePath.indexOf('\\') >= 0 ? imagePath.lastIndexOf('\\') : imagePath.lastIndexOf('/'));
+				filename = imagePath.substring(startIndex);
+				if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+					filename = filename.substring(1);
+					$('#image-name').text(filename);
+				}
+			}
+	    });
 	</script>
 {% endblock %}

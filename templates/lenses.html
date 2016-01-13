@@ -59,7 +59,7 @@
 					{% for lens in lenses %}
 						<div class="search-result col-sm-4">
 							<a href="{{url_for('showLens', lens_id = lens.id)}}" class="lens-link">
-								<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">
+								{% if lens.picture != None %}<img src="static/lens-img/{{lens.picture}}" class="img-responsive search-img">{% endif %}
 								<p>{{lens.name}}</p>
 							</a>
 						</div>

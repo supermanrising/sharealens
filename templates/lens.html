@@ -8,12 +8,16 @@
 	<!-- End Navigation -->
 	<div class="container">
 		<div class="row top-40">
+			{% if lens.picture != None %}
 			<div class="col-sm-5">
 				<div class="helper">
 					<img src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}" alt="{{lens.name}}" class="img-responsive lens-img">
 				</div>
 			</div>
 			<div class="col-sm-6 col-sm-offset-1">
+			{% else %}
+			<div class="col-sm-6 col-sm-offset-3">
+			{% endif %}
 				<h2>{{lens.name}}</h2>
 				<ul class="lens-details">
 					<li><p>Brand: <span>{{lens.brand}}</span></p></li>
@@ -51,11 +55,11 @@
 			</div>
 		</div>
 		<div class="row">
-			{% for lens in related %}
+			{% for relatedLens in related %}
 				<div class="col-sm-2{% if loop.first %} col-sm-offset-1{% endif %}">
-					<a href="{{url_for('showLens', lens_id = lens.id)}}">
-						<img src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}" alt="{{lens.name}}" class="img-responsive related-img">
-						<p class="related-lens">{{lens.name}}</p>
+					<a href="{{url_for('showLens', lens_id = relatedLens.id)}}">
+						{% if relatedLens.picture != None %}<img src="{{ url_for('static', filename='lens-img/') }}{{relatedLens.picture}}" alt="{{relatedLens.name}}" class="img-responsive related-img">{% endif %}
+						<p class="related-lens">{{relatedLens.name}}</p>
 					</a>
 				</div>
 			{% endfor %}
