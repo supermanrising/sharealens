@@ -1,0 +1,22 @@
+{% extends "main.html" %}
+{% block title %}Edit {{lens.name}}{% endblock %}
+{% block content %}
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-white">
+		{% include 'navbar.html' %}
+	</nav>
+	<!-- End Navigation -->
+	<form action="{{url_for('deleteLens', lens_id=lens.id)}}" method="POST" role="form" enctype="multipart/form-data">
+		<div class="container-fluid off-white">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<h1 class="rent-heading text-center">Are you sure you want to delete {{lens.name}}?</h1>
+					<button type="submit" class="ghost-submit top-20 bottom-20" id="submit" type="submit">Delete Lens</button>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="footer-fixed">
+		{% include 'footer.html' %}
+	</div>
+{% endblock %}

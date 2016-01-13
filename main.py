@@ -213,6 +213,24 @@ def editLens(lens_id):
 		return render_template('edit-lens.html', user=loggedIn, lens=lens)
 
 
+@app.route('/delete/<int:lens_id>', methods = ['GET', 'POST'])
+def deleteLens(lens_id):
+	if 'username' not in login_session:
+		return redirect(url_for('showLogin', next='rent-your-gear'))
+	else:
+		loggedIn = True
+	lens = session.query(Lens).filter_by(id=lens_id).one()
+	if lens.user_id != login_session['user_id']:
+		return "<script>function myFunction() {alert('You are not authorized to delete this lens');}</script><body onload='myFunction()'>"
+	if request.method == 'POST':
+		session.delete(lens)
+		session.commit()
+		flash("Lens Deleted")
+		return redirect(url_for('showHome'))
+	else:
+		return render_template('delete-lens.html', user=loggedIn, lens=lens)
+
+
 @app.route('/getState')
 def generateState():
 	state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))

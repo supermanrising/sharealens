@@ -47,7 +47,7 @@
 				{% if currentuser == lens.user_id %}
 					<div class="button">
 						<a href="{{url_for('editLens', lens_id = lens.id)}}" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-pencil"></span> &nbsp;Edit Lens</a>
-						<a href="#" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete Lens</a>
+						<a href="{{url_for('deleteLens', lens_id = lens.id)}}" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete Lens</a>
 					</div>
 				{% else %}
 					<div class="button">
@@ -56,21 +56,27 @@
 				{% endif %}
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-xs-12">
-				<h3 class="related-title">Related Lenses</h3>
-			</div>
-		</div>
-		<div class="row">
-			{% for relatedLens in related %}
-				<div class="col-sm-2{% if loop.first %} col-sm-offset-1{% endif %}">
-					<a href="{{url_for('showLens', lens_id = relatedLens.id)}}">
-						{% if relatedLens.picture != None %}<img src="{{ url_for('static', filename='lens-img/') }}{{relatedLens.picture}}" alt="{{relatedLens.name}}" class="img-responsive related-img">{% endif %}
-						<p class="related-lens">{{relatedLens.name}}</p>
-					</a>
+		{% if related.count() != 0 %}
+			<div class="row">
+				<div class="col-xs-12">
+					<h3 class="related-title">Related Lenses</h3>
 				</div>
-			{% endfor %}
-		</div>
+			</div>
+			<div class="row">
+				{% for relatedLens in related %}
+					<div class="col-sm-2{% if loop.first %} col-sm-offset-1{% endif %}">
+						<a href="{{url_for('showLens', lens_id = relatedLens.id)}}">
+							{% if relatedLens.picture != None %}<img src="{{ url_for('static', filename='lens-img/') }}{{relatedLens.picture}}" alt="{{relatedLens.name}}" class="img-responsive related-img">{% endif %}
+							<p class="related-lens">{{relatedLens.name}}</p>
+						</a>
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
 	</div>
-	{% include 'footer.html' %}
+	{% if related.count() == 0 %}
+		<div class="footer-fixed">
+			{% include 'footer.html' %}
+		</div>
+	{% endif %}
 {% endblock %}
