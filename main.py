@@ -44,10 +44,17 @@ def showHome():
 		loggedIn = False
 	else:
 		loggedIn = True
-	totalLenses = session.query(func.count(Lens.id)).scalar()
+	lensIDs = session.query(Lens.id).all()
+	allLenses = []
+	for id in lensIDs:
+		allLenses.append(id[0])
+	print allLenses
 	featured = []
 	for num in range(1,4):
-		randomNumber = random.randrange(1, totalLenses)
+		# Generate a random lens ID from the allLenses array
+		randomNumber = random.choice(allLenses)
+		# Remove this lens ID so it doesn't get choses twice
+		allLenses.remove(randomNumber)
 		featured.append(session.query(Lens).filter_by(id=randomNumber).one())
 	brands = []
 	for value in session.query(Lens.brand).distinct():
