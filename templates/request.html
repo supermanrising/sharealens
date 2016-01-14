@@ -1,12 +1,9 @@
 {% extends "main.html" %}
 {% block title %}Request to rent {{lens.name}} - Share A Lens{% endblock %}
 {% block customScripts %}
-	<script src="/bower_components/jquery/jquery.min.js"></script>
-	<script src="/bower_components/moment/min/moment.min.js"></script>
-	<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+	<script type="text/javascript" src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-datetimepicker.min.js') }}"></script>
+	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-datetimepicker.min.css') }}">
 {% endblock %}
 {% block content %}
 	<!-- Navigation -->
@@ -15,8 +12,40 @@
 	</nav>
 	<!-- End Navigation -->
 	<div class="container">
-		<div class="row">
-		</div>
+	    <div class='col-md-5'>
+	        <div class="form-group">
+	            <div class='input-group date' id='datetimepicker6'>
+	                <input type='text' class="form-control" />
+	                <span class="input-group-addon">
+	                    <span class="glyphicon glyphicon-calendar"></span>
+	                </span>
+	            </div>
+	        </div>
+	    </div>
+	    <div class='col-md-5'>
+	        <div class="form-group">
+	            <div class='input-group date' id='datetimepicker7'>
+	                <input type='text' class="form-control" />
+	                <span class="input-group-addon">
+	                    <span class="glyphicon glyphicon-calendar"></span>
+	                </span>
+	            </div>
+	        </div>
+	    </div>
 	</div>
+	<script type="text/javascript">
+	    $(function () {
+	        $('#datetimepicker6').datetimepicker();
+	        $('#datetimepicker7').datetimepicker({
+	            useCurrent: false //Important! See issue #1075
+	        });
+	        $("#datetimepicker6").on("dp.change", function (e) {
+	            $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+	        });
+	        $("#datetimepicker7").on("dp.change", function (e) {
+	            $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+	        });
+	    });
+	</script>
 	{% include 'footer.html' %}
 {% endblock %}
