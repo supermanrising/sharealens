@@ -41,9 +41,10 @@ def allowed_file(filename):
 @app.route('/')
 def showHome():
 	if 'username' not in login_session:
-		loggedIn = False
+		user = None
 	else:
-		loggedIn = True
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
 	lensIDs = session.query(Lens.id).all()
 	allLenses = []
 	for id in lensIDs:
@@ -62,15 +63,16 @@ def showHome():
 	styles = []
 	for value in session.query(Lens.style).distinct():
 		styles.append(value[0])
-	return render_template('index.html', featured=featured, brands=brands, styles=styles, user=loggedIn)
+	return render_template('index.html', featured=featured, brands=brands, styles=styles, user=user)
 
 
 @app.route('/lenses')
 def showLenses():
 	if 'username' not in login_session:
-		loggedIn = False
+		user = None
 	else:
-		loggedIn = True
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
 	try:
 		brand = request.args['brand']
 	except ValueError:
@@ -111,30 +113,31 @@ def showLenses():
 		styles.append(value[0])
 	msg = 'Results <b>{start}</b> - <b>{end}</b> of <b>{found}</b> {record_name}'
 	pagination = Pagination(page=page, total=rows, record_name='lenses', found=rows, css_framework='bootstrap3', display_msg=msg, per_page=12)
-	return render_template('lenses.html', lenses=lenses, rows=rows, pagination=pagination, brands=brands, styles=styles, user=loggedIn)
+	return render_template('lenses.html', lenses=lenses, rows=rows, pagination=pagination, brands=brands, styles=styles, user=user)
 
 
 @app.route('/lens/<int:lens_id>')
 def showLens(lens_id):
 	if 'username' not in login_session:
-		loggedIn = False
+		user = None
 	else:
-		loggedIn = True
-	currentuser = login_session.get('user_id')
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
 	lens = session.query(Lens).filter_by(id=lens_id).first()
 	brand = lens.brand
 	style = lens.style
 	related = session.query(Lens).filter_by(brand=brand).filter(Lens.id!=lens_id).filter_by(style=style).limit(5)
-	return render_template('lens.html', lens=lens, related=related, user=loggedIn, currentuser=currentuser)
+	return render_template('lens.html', lens=lens, related=related, user=user)
 
 
 @app.route('/login/<string:next>')
 def showLogin(next):
 	if 'username' not in login_session:
-		loggedIn = False
+		user = None
 	else:
-		loggedIn = True
-	return render_template('login.html', user=loggedIn, next=next)
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
+	return render_template('login.html', user=user, next=next)
 
 
 @app.route('/rent-your-gear', methods = ['GET', 'POST'])
@@ -142,7 +145,8 @@ def uploadLens():
 	if 'username' not in login_session:
 		return redirect(url_for('showLogin', next='rent-your-gear'))
 	else:
-		loggedIn = True
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
 	if request.method == 'POST':
 		file = request.files['file']
 		if file and allowed_file(file.filename):
@@ -174,15 +178,16 @@ def uploadLens():
 		flash("New Lens Created")
 		return redirect(url_for('showLens', lens_id = newLens.id))
 	else:
-		return render_template('rent-your-gear.html', user=loggedIn)
+		return render_template('rent-your-gear.html', user=user)
 
 
 @app.route('/edit/<int:lens_id>', methods = ['GET', 'POST'])
 def editLens(lens_id):
 	if 'username' not in login_session:
-		return redirect(url_for('showLogin', next='rent-your-gear'))
+		return redirect(url_for('showLogin', next='account'))
 	else:
-		loggedIn = True
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
 	lens = session.query(Lens).filter_by(id=lens_id).one()
 	if lens.user_id != login_session['user_id']:
 		return "<script>function myFunction() {alert('You are not authorized to edit this lens');}</script><body onload='myFunction()'>"
@@ -221,15 +226,16 @@ def editLens(lens_id):
 		flash("Lens Successfully Edited")
 		return redirect(url_for('showLens', lens_id = lens_id))
 	else:
-		return render_template('edit-lens.html', user=loggedIn, lens=lens)
+		return render_template('edit-lens.html', user=user, lens=lens)
 
 
 @app.route('/delete/<int:lens_id>', methods = ['GET', 'POST'])
 def deleteLens(lens_id):
 	if 'username' not in login_session:
-		return redirect(url_for('showLogin', next='delete/' + str(lens_id)))
+		return redirect(url_for('showLogin', next='account'))
 	else:
-		loggedIn = True
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
 	lens = session.query(Lens).filter_by(id=lens_id).one()
 	if lens.user_id != login_session['user_id']:
 		return "<script>function myFunction() {alert('You are not authorized to delete this lens');}</script><body onload='myFunction()'>"
@@ -239,7 +245,7 @@ def deleteLens(lens_id):
 		flash("Lens Deleted")
 		return redirect(url_for('showHome'))
 	else:
-		return render_template('delete-lens.html', user=loggedIn, lens=lens)
+		return render_template('delete-lens.html', user=user, lens=lens)
 
 
 @app.route('/getState')
@@ -331,13 +337,14 @@ def gconnect():
 		user_id = createUser(login_session)
 	login_session['user_id'] = user_id
 
-	output = ''
-	output += '<h1>Welcome, '
-	output += login_session['username']
-	output += '!</h1>'
-	output += '<img src="'
-	output += login_session['picture']
-	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+	user = getUserInfo(user_id)
+	# if picture has changed, update it
+	if user.picture != login_session['picture']:
+		user.picture = login_session['picture']
+		session.add(user)
+		session.commit()
+
+	output = 'Success'
 	flash("you are now logged in as %s" % login_session['username'])
 	print "done!"
 	return output
@@ -396,6 +403,13 @@ def fbconnect():
 	if not user_id:
 		user_id = createUser(login_session)
 	login_session['user_id'] = user_id
+
+	user = getUserInfo(user_id)
+	# if picture has changed, update it
+	if user.picture != login_session['picture']:
+		user.picture = login_session['picture']
+		session.add(user)
+		session.commit()
 
 	output = ''
 	output += '<h1>Welcome, '
@@ -488,6 +502,28 @@ def disconnect():
 		del login_session['picture']
 		del login_session['user_id']
 		return redirect(url_for('showHome'))
+
+
+@app.route('/account')
+def showAccount():
+	if 'username' not in login_session:
+		return redirect(url_for('showLogin', next='account'))
+	else:
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
+	lenses = session.query(Lens).filter_by(user_id=user.id).all()
+	return render_template('account.html', user=user, lenses=lenses)
+
+
+@app.route('/request/<int:lens_id>')
+def requestRental(lens_id):
+	if 'username' not in login_session:
+		return redirect(url_for('showLogin', next='account'))
+	else:
+		currentuser = login_session.get('user_id')
+		user = session.query(User).filter_by(id=currentuser).one()
+	lens = session.query(Lens).filter_by(id=lens_id).one()
+	return render_template('request.html', user=user, lens=lens)
 
 
 # User Helper Functions

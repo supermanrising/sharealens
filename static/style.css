@@ -178,6 +178,10 @@ p {
 	font-size: 16px;
 }
 
+.lens-name-sm {
+	margin-top: 6px;
+}
+
 /***************
 ****************
 IMAGES
@@ -212,6 +216,18 @@ IMAGES
 .img-edit {
 	max-width: 120px;
 	display: block;
+	margin: 0 auto;
+}
+
+.user-pic {
+	display: block;
+	margin: 50px auto;
+	border: 1px solid #ccc;
+}
+
+.account-lens-img {
+	max-height: 150px;
+	max-width: 150px;
 	margin: 0 auto;
 }
 
@@ -339,6 +355,85 @@ BOOTSTRAP MODS
 
 .bottom-20 {
 	margin-bottom: 20px;
+}
+
+.navbar-nav li a:focus,
+.navbar-nav li a:active {
+	background: transparent !important;
+}
+
+.dropdown-menu > li > a {
+    color: #428bca;
+}
+
+.dropdown ul.dropdown-menu {
+    border-radius: 4px;
+    box-shadow: none;
+    margin-top: 20px;
+    width: 200px;
+}
+
+.dropdown ul.dropdown-menu:before {
+    content: "";
+    border-bottom: 10px solid #fff;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    z-index: 10;
+}
+
+.dropdown ul.dropdown-menu:after {
+    content: "";
+    border-bottom: 12px solid #ccc;
+    border-right: 12px solid transparent;
+    border-left: 12px solid transparent;
+    position: absolute;
+    top: -12px;
+    right: 14px;
+    z-index: 9;
+}
+
+.glyphicon-user {
+	margin-left: 10px;
+	position: relative;
+	top: 1px;
+}
+
+.nav-tabs > li {
+    float: none;
+    display: inline-block;
+    *display: inline; /* ie7 fix */
+    zoom: 1; /* hasLayout ie7 trigger */
+}
+
+.nav-tabs {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.tab-content {
+	margin-top: 30px;
+}
+
+.tab-content .ghost-submit-link {
+	font-size: 14px !important;
+	vertical-align: bottom;
+}
+
+.custom-row {
+	font-size: 0;
+}
+
+.custom-row > * {
+	float: none;
+    display: inline-block;
+    font-size: 14px; /* if using LESS it's quicker to just use @font-size-base */
+}
+
+.custom-row > .button {
+	vertical-align: bottom;
 }
 
 /***************
@@ -470,13 +565,14 @@ BUTTONS
 .fb-text {
 	padding-left: 19px;
 	position: relative;
-	top: -2px;
+	top: -3px;
 }
 
 .fb-login:hover {
 	text-decoration: none;
 	color: #fff;
 	background-color: #4c6db3;
+	border-bottom: 2px solid #2a3c62;
 }
 
 /***************
@@ -638,7 +734,7 @@ GENERAL
 .featured {
 	background-position: center;
 	background-size: cover;
-	width: 95%;
+	width: 100%;
 	margin-bottom: 20px;
 }
 

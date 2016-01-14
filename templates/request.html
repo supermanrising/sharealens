@@ -1,0 +1,22 @@
+{% extends "main.html" %}
+{% block title %}Request to rent {{lens.name}} - Share A Lens{% endblock %}
+{% block customScripts %}
+	<script src="/bower_components/jquery/jquery.min.js"></script>
+	<script src="/bower_components/moment/min/moment.min.js"></script>
+	<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+{% block content %}
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-white">
+		{% include 'navbar.html' %}
+	</nav>
+	<!-- End Navigation -->
+	<div class="container">
+		<div class="row">
+		</div>
+	</div>
+	{% include 'footer.html' %}
+{% endblock %}

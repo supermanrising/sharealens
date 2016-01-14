@@ -19,8 +19,8 @@
 			</div>
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="{% if user %}{{ url_for('uploadLens') }}{% else %}#login{% endif %}" class="button-nav-link" {% if user != True %}data-toggle="modal" data-target="#login" onclick="generateState('/rent-your-gear');setLogin();"{% endif %}>Rent Your Gear</a></li>
-					{% if user %}
+					<li><a href="{% if user != None %}{{ url_for('uploadLens') }}{% else %}#login{% endif %}" class="button-nav-link" {% if user != True %}data-toggle="modal" data-target="#login" onclick="generateState('/rent-your-gear');setLogin();"{% endif %}>Rent Your Gear</a></li>
+					{% if user != None %}
 					<li><a href="{{ url_for('disconnect') }}">Sign Out</a></li>
 					{% else %}
 					<li><a href="#login" data-toggle="modal" data-target="#login" onclick="generateState('/{{next}}');setSignUp();" id="login-trigger">Sign Up</a></li>

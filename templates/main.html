@@ -21,6 +21,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="//apis.google.com/js/platform.js?onload=start"> </script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	{% block customScripts %}{% endblock %}
 </head>
 <body>
 	{% block content %}
@@ -56,7 +57,7 @@
 									<!--END GOOGLE PLUS SIGN IN BUTTON -->
 								</div>
 								<div class="col-xs-6">
-									<a href="javascript:sendTokenToServer()" class="fb-login"><span class="fb-text">Sign In</span></a>
+									<a href="javascript:sendTokenToServer()" class="fb-login"><span class="fb-text">Sign in</span></a>
   								</div>
 							</div>
 						</div>
@@ -88,12 +89,16 @@
 			$('#modal-heading').text('Sign up to use all of Share-A-Lens');
 			$('.modal-sub').text('Sign up to rent lenses or make money of your camera gear.')
 			$('.login-footer').html('<p onclick="setLogin()">Already have an account? <u>Login</u></p>')
+			$('.login-buttons').attr('style', 'display: block');
+			$('.login-footer').attr('style', 'display: block');
 		}
 
 		function setLogin() {
 			$('#modal-heading').text('Welcome Back!');
 			$('.modal-sub').text('Sign in to your Share-A-Lens Account.')
 			$('.login-footer').html('<p onclick="setSignUp()">New to Share-A-Lens?  <u>Create an account</u></p>')
+			$('.login-buttons').attr('style', 'display: block');
+			$('.login-footer').attr('style', 'display: block');
 		}
 
 		function signInCallback(authResult) {
@@ -132,14 +137,14 @@
 				$('#modal-heading').attr('style', 'margin-bottom: 20px');
 				$('#modal-heading').text('Oops!');
 				$('.modal-sub').attr('style', 'display: block');
-				$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
+				$('.modal-sub').text('Something went wrong.  Please try again.');
 			} else {
 				$('.login-buttons').attr('style', 'display: none');
 				$('.login-footer').attr('style', 'display: none');
 				$('#modal-heading').attr('style', 'margin-bottom: 20px');
 				$('#modal-heading').text('Oops!');
 				$('.modal-sub').attr('style', 'display: block');
-				$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
+				$('.modal-sub').text('Something went wrong.  Please try again.');
 			}
 		}
 	</script>
@@ -197,7 +202,7 @@
 									$('#modal-heading').attr('style', 'margin-bottom: 20px');
 									$('#modal-heading').text('Oops!');
 									$('.modal-sub').attr('style', 'display: block');
-									$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
+									$('.modal-sub').text('Something went wrong.  Please try again.');
 								}
 							}
 						});
@@ -208,7 +213,7 @@
 					$('#modal-heading').attr('style', 'margin-bottom: 20px');
 					$('#modal-heading').text('Oops!');
 					$('.modal-sub').attr('style', 'display: block');
-					$('.modal-sub').text('Something went wrong.  Please clear your browser cookies and try again.');
+					$('.modal-sub').text('Something went wrong.  Please try again.');
 				}
 			}, {
 				scope: 'public_profile,email'

@@ -1,0 +1,53 @@
+{% extends "main.html" %}
+{% block title %}My Profile - Share A Lens{% endblock %}
+{% block content %}
+	<!-- Navigation -->
+	<nav class="navbar navbar-default navbar-white">
+		{% include 'navbar.html' %}
+	</nav>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-2 col-sm-offset-5">
+				<img src="{{user.picture}}" alt="{{user.name}}" class="img-responsive img-circle user-pic">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-10 col-sm-offset-1">
+				<!-- Nav tabs -->
+				<ul class="nav nav-tabs" role="tablist">
+					<li role="presentation" class="active"><a href="#my-lenses" aria-controls="my-lenses" role="tab" data-toggle="tab">My Lenses</a></li>
+					<li role="presentation"><a href="#my-rentals" aria-controls="my-rentals" role="tab" data-toggle="tab">My Rentals</a></li>
+				</ul>
+
+				<!-- Tab panes -->
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active fade in" id="my-lenses">
+						<div class="row result-row custom-row">
+							{% for lens in lenses %}
+								<div class="search-result col-sm-3">
+									<a href="{{url_for('showLens', lens_id = lens.id)}}" class="lens-link">
+										{% if lens.picture != None %}<img src="static/lens-img/{{lens.picture}}" class="img-responsive account-lens-img">{% endif %}
+										<p class="lens-name-sm">{{lens.name}}</p>
+										<div class="button">
+											<a href="{{url_for('editLens', lens_id = lens.id)}}" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-pencil"></span> &nbsp;Edit</a>
+											<a href="{{url_for('deleteLens', lens_id = lens.id)}}" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-trash"></span> &nbsp;Delete</a>
+										</div>
+									</a>
+								</div>
+								{% if loop.last != true %}
+									{% if loop.index % 4 == 0 %}
+										</div>
+										<div class="row result-row custom-row">
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</div>
+					</div>
+					<div role="tabpanel" class="tab-pane fade" id="my-rentals">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% include 'footer.html' %}
+{% endblock %}
