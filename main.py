@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Lens, User
+from database_setup import Base, Lens, User, Rental
 import random, string
 
 # IMPORTS FOR PAGINATION
@@ -21,6 +21,9 @@ import requests
 # FOR UPLOADING PHOTOS
 from werkzeug import secure_filename
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+# FOR WORKING WITH DATES
+from datetime import date, timedelta as td
 
 app = Flask(__name__)
 
@@ -149,20 +152,13 @@ def uploadLens():
 		user = session.query(User).filter_by(id=currentuser).one()
 	if request.method == 'POST':
 		file = request.files['file']
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			UPLOAD_FOLDER = 'static/lens-img/' + str(login_session['user_id'])
-			app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-		else:
-			filename = None
 		if request.form['style'] == 'Prime':
 			maximumZoom = request.form['min-zoom']
 		else:
 			maximumZoom = request.form['max-zoom']
 		newLens = Lens(
 			name = request.form['name'],
-			picture = str(login_session['user_id']) + '/' + filename,
+			picture = None,
 			user_id = login_session['user_id'],
 			brand = request.form['brand'],
 			style = request.form['style'],
@@ -173,10 +169,16 @@ def uploadLens():
 			price_per_week = request.form['price-week'],
 			price_per_month = request.form['price-month']
 		)
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			UPLOAD_FOLDER = 'static/lens-img/' + str(login_session['user_id'])
+			app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			newLens.picture = str(newLens.id) + '/' + filename
 		session.add(newLens)
 		session.commit()
 		flash("New Lens Created")
-		return redirect(url_for('showLens', lens_id = newLens.id))
+		return redirect(url_for('showLens', lens_id=newLens.id, user=user))
 	else:
 		return render_template('rent-your-gear.html', user=user)
 
@@ -224,7 +226,7 @@ def editLens(lens_id):
 		session.add(lens)
 		session.commit()
 		flash("Lens Successfully Edited")
-		return redirect(url_for('showLens', lens_id = lens_id))
+		return redirect(url_for('showLens', lens_id=lens_id, user=user))
 	else:
 		return render_template('edit-lens.html', user=user, lens=lens)
 
@@ -512,10 +514,11 @@ def showAccount():
 		currentuser = login_session.get('user_id')
 		user = session.query(User).filter_by(id=currentuser).one()
 	lenses = session.query(Lens).filter_by(user_id=user.id).all()
-	return render_template('account.html', user=user, lenses=lenses)
+	rentals = session.query(Rental).filter_by(renter_id=user.id).all()
+	return render_template('account.html', user=user, lenses=lenses, rentals=rentals)
 
 
-@app.route('/request/<int:lens_id>')
+@app.route('/request/<int:lens_id>', methods=['GET', 'POST'])
 def requestRental(lens_id):
 	if 'username' not in login_session:
 		return redirect(url_for('showLogin', next='account'))
@@ -523,7 +526,57 @@ def requestRental(lens_id):
 		currentuser = login_session.get('user_id')
 		user = session.query(User).filter_by(id=currentuser).one()
 	lens = session.query(Lens).filter_by(id=lens_id).one()
-	return render_template('request.html', user=user, lens=lens)
+
+	rentals = session.query(Rental).filter_by(lens_id=lens.id)
+	dates = []
+	for rental in rentals:
+		startDate = rental.start_date
+		endDate = rental.end_date
+		delta = endDate - startDate
+		for i in range(delta.days + 1):
+			thisDate = startDate + td(days=i)
+			dates.append(thisDate.strftime("%Y-%m-%d"))
+
+	if request.method == 'POST':
+		print 'something'
+		start = request.form['startDate']
+		end = request.form['endDate']
+		start = start.split(" ")
+		end = end.split(" ")
+		start = map(int,start)
+		end = map(int,end)
+		newRental = Rental(
+			start_date=date(start[0], start[1], start[2]),
+			end_date=date(end[0], end[1], end[2]),
+			renter_id=login_session.get('user_id'),
+			owner_id=lens.user_id,
+			lens_id=lens.id
+		)
+
+		checkStart = newRental.start_date.strftime("%Y-%m-%d")
+		checkEnd = newRental.end_date.strftime("%Y-%m-%d")
+
+		try:
+			startIndex = dates.index(checkStart)
+		except ValueError:
+			startIndex = -1
+
+		try:
+			endIndex = dates.index(checkEnd)
+		except ValueError:
+			endIndex = -1
+
+		# If the dates array includes either the start or end date, cancel the rental
+		# This should never happen anyway, since the dates are disabled in the frontend code
+		if (startIndex != -1) or (endIndex != -1):
+			return "<script>function myFunction() {alert('Oops!  It looks like the lens you requested is alread rented on those dates.  Please go back and try again.');}</script><body onload='myFunction()'>"
+		
+		session.add(newRental)
+		session.commit()
+		flash("Lens Rental Request Successful!")
+		return redirect(url_for('showAccount', user=user))
+	else:
+		return render_template('request.html', user=user, lens=lens, dates=dates)
 
 
 # User Helper Functions

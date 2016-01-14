@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -55,8 +55,8 @@ class Rental(Base):
     __tablename__ = 'rental'
 
     id = Column(Integer, primary_key=True)
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
     renter_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     owner_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     lens_id = Column(Integer, ForeignKey('lens.id'), nullable=False)

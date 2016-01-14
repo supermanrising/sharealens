@@ -219,6 +219,12 @@ IMAGES
 	margin: 0 auto;
 }
 
+.img-rent {
+	max-width: 250px;
+	display: block;
+	margin: 0 auto;
+}
+
 .user-pic {
 	display: block;
 	margin: 50px auto;
@@ -743,10 +749,6 @@ GENERAL
 	background-color: rgba(0,0,0,.6);
 }
 
-.bottom-40 {
-	margin-bottom: 40px;
-}
-
 .logo {
 	padding: 0;
 }
@@ -886,6 +888,14 @@ td {
 
 .bottom-20 {
 	margin-bottom: 20px !important;
+}
+
+.bottom-40 {
+	margin-bottom: 40px;
+}
+
+.pad-bottom {
+	padding-bottom: 40px;
 }
 
 .footer-fixed {

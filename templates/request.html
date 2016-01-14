@@ -11,41 +11,140 @@
 		{% include 'navbar.html' %}
 	</nav>
 	<!-- End Navigation -->
-	<div class="container">
-	    <div class='col-md-5'>
-	        <div class="form-group">
-	            <div class='input-group date' id='datetimepicker6'>
-	                <input type='text' class="form-control" />
-	                <span class="input-group-addon">
-	                    <span class="glyphicon glyphicon-calendar"></span>
-	                </span>
-	            </div>
-	        </div>
-	    </div>
-	    <div class='col-md-5'>
-	        <div class="form-group">
-	            <div class='input-group date' id='datetimepicker7'>
-	                <input type='text' class="form-control" />
-	                <span class="input-group-addon">
-	                    <span class="glyphicon glyphicon-calendar"></span>
-	                </span>
-	            </div>
-	        </div>
-	    </div>
+	<div class="container-fluid off-white pad-bottom">
+		<div class="row">
+			<div class="col-sm-10 col-sm-offset-1">
+				<h1 class="rent-heading text-center">Request to rent {{lens.name}}</h1>
+				<img id="current-img" class="img-rent img-thumbnail" src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}">
+			</div>
+		</div>
 	</div>
-	<script type="text/javascript">
-	    $(function () {
-	        $('#datetimepicker6').datetimepicker();
-	        $('#datetimepicker7').datetimepicker({
-	            useCurrent: false //Important! See issue #1075
-	        });
-	        $("#datetimepicker6").on("dp.change", function (e) {
-	            $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
-	        });
-	        $("#datetimepicker7").on("dp.change", function (e) {
-	            $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
-	        });
-	    });
-	</script>
+	<form action="{{url_for('requestRental', lens_id = lens.id)}}" method="POST" id="request-form">
+		<div class="container top-20">
+			<div class="row">
+				<div class="col-xs-12">
+					<h3 class="text-center">When would you like to reserve this lens?</h3>
+				</div>
+			</div>
+			<div class="row top-40">
+				<div class="col-sm-6 col-sm-offset-3">
+					<div class="form-group">
+						<label for="start">Start Date:</label>
+						<div class="input-group date" id="datetimepicker6">
+							<input type="text" class="form-control" onblur="calculateCost()">
+							<input type="hidden" name="startDate" value="" id="startDate">
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row bottom-40">
+				<div class="col-sm-6 col-sm-offset-3">
+					<div class="form-group">
+						<label for="start">End Date:</label>
+						<div class="input-group date" id="datetimepicker7">
+							<input type="text" class="form-control" onblur="calculateCost()">
+							<input type="hidden" name="endDate" value="" id="endDate">
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+				<div class="col-xs-12">
+					<h5 class="cost text-center">Total Cost: $<span id="total">0</span></h5>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<button type="submit" class="ghost-submit bottom-20" id="submit" type="submit">Request Rental</button>
+				</div>
+			</div>
+		</div>
+	</form>
 	{% include 'footer.html' %}
+	<script type="text/javascript">
+		var startDate = moment(),
+			endDate;
+		var dateArray = [
+			{% for date in dates %}
+				"{{date}}"{% if not loop.last %},{% endif %}
+			{% endfor %}
+		];
+		$(function () {
+			$('#datetimepicker6').datetimepicker({
+				format: 'YYYY-M-D',
+				disabledDates: dateArray,
+				minDate: Date.now(),
+				defaultDate: Date.now()
+			});
+			$('#datetimepicker7').datetimepicker({
+				useCurrent: false, //Important! See issue #1075
+				format: 'YYYY-M-D',
+				disabledDates: dateArray,
+				minDate: Date.now()
+			});
+			$("#datetimepicker6").on("dp.change", function (e) {
+				$('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+				startDate = e.date;
+				calculateCost(startDate, endDate);
+			});
+			$("#datetimepicker7").on("dp.change", function (e) {
+				$('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+				endDate = e.date;
+				calculateCost(startDate, endDate);
+			});
+
+			// Store dates in hidden input fields on submit to be passed to server side code
+			$('#request-form').submit( function(e){
+				startDate = startDate.format('YYYY MM DD');
+				endDate = endDate.format('YYYY MM DD');
+				$('#startDate').val(startDate);
+				$('#endDate').val(endDate);
+			});
+		});
+
+		function calculateCost(startDate, endDate) {
+			// Is the startDate or endDate is undefined?
+			if (startDate === undefined || endDate === undefined) {
+				return;
+			}
+
+			var monthsStartDate = moment(startDate);			// clone startDate before mutating
+			var months = endDate.diff(startDate, 'months');		// store the difference between start and end date in months
+			// is there at least 1 month in difference?
+			if (months > 0) {
+				monthsStartDate.add(months, 'months');			// add months to the start date
+			} else {
+				monthsStartDate = startDate;					// reset the months start date (necessary in case user removes days)
+			}
+
+			var weeksStartDate = moment(monthsStartDate);		// clone monthsStartDate to re-mutilate
+			var weeks = endDate.diff(monthsStartDate, 'weeks');	// store the different between start and end date in weeks
+			// is there at least 1 week in difference?
+			if (weeks > 0) {
+				weeksStartDate.add(weeks, 'weeks');				// add weeks to the start date
+			} else {
+				weeksStartDate = monthsStartDate;				// reset the weeks start date
+			}
+
+			var days = endDate.diff(weeksStartDate, 'days');	// calculate number of days remaining in difference
+
+			var priceDay = '{{lens.price_per_day}}';
+			priceDay = Number(priceDay.replace('$', ''));
+			var priceWeek = '{{lens.price_per_week}}';
+			priceWeek = Number(priceWeek.replace('$', ''));
+			var priceMonth = '{{lens.price_per_month}}';
+			priceMonth = Number(priceMonth.replace('$', ''));
+
+			var totalPrice = (priceDay * days) + (priceWeek * weeks) + (priceMonth * months);
+			$('#total').text(totalPrice);
+		}
+	</script>
 {% endblock %}
