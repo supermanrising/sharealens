@@ -261,7 +261,7 @@ def uploadLens():
 @app.route('/edit/<int:lens_id>', methods=['GET', 'POST'])
 def editLens(lens_id):
     if 'username' not in login_session:
-        return redirect(url_for('showLogin', next='account'))
+        return redirect(url_for('showLogin', next='account?showRentals=lenses'))
     else:
         currentuser = login_session.get('user_id')
         user = session.query(User).filter_by(id=currentuser).one()
@@ -320,7 +320,7 @@ def editLens(lens_id):
 @app.route('/delete/<int:lens_id>', methods=['GET', 'POST'])
 def deleteLens(lens_id):
     if 'username' not in login_session:
-        return redirect(url_for('showLogin', next='account'))
+        return redirect(url_for('showLogin', next='account?showRentals=lenses'))
     else:
         currentuser = login_session.get('user_id')
         user = session.query(User).filter_by(id=currentuser).one()
@@ -656,13 +656,17 @@ def disconnect():
         return redirect(url_for('showHome'))
 
 
-@app.route('/account/<showRentals>')
-def showAccount(showRentals):
+@app.route('/account')
+def showAccount():
     if 'username' not in login_session:
-        return redirect(url_for('showLogin', next='account'))
+        return redirect(url_for('showLogin', next='account?showRentals=lenses'))
     else:
         currentuser = login_session.get('user_id')
         user = session.query(User).filter_by(id=currentuser).one()
+    try:
+        showRentals = request.args['showRentals']
+    except ValueError:
+        showRentals = 'lenses'
     lenses = session.query(Lens).filter_by(user_id=user.id).all()
     rentals = session.query(Rental).filter_by(renter_id=user.id).all()
     return render_template('account.html', user=user, lenses=lenses,
@@ -672,7 +676,7 @@ def showAccount(showRentals):
 @app.route('/request/<int:lens_id>', methods=['GET', 'POST'])
 def requestRental(lens_id):
     if 'username' not in login_session:
-        return redirect(url_for('showLogin', next='account'))
+        return redirect(url_for('showLogin', next='account?showRentals=lenses'))
     else:
         currentuser = login_session.get('user_id')
         user = session.query(User).filter_by(id=currentuser).one()
