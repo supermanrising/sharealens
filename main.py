@@ -20,10 +20,14 @@ import requests
 
 # FOR UPLOADING PHOTOS
 from werkzeug import secure_filename
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 # FOR WORKING WITH DATES
 from datetime import date, timedelta as td
+
+# FOR RSS / XML ENDPOINTS
+import xml.etree.ElementTree as ET
+from ElementTree_pretty import prettify
 
 app = Flask(__name__)
 
@@ -630,11 +634,59 @@ def getUserID(email):
 		return None
 
 
-# JSON APIs to view Restaurant Information
+# JSON APIs to view Lens Information
 @app.route('/lenses/JSON')
 def lensesJSON():
-    lenses = session.query(Lens).all()
-    return jsonify(Lenses=[i.serialize for i in lenses])
+	lenses = session.query(Lens).all()
+	return jsonify(Lenses=[i.serialize for i in lenses])
+
+
+# XML API to view Lens Information
+@app.route('/lenses/XML')
+def lensesRSS():
+	lensesQuery = session.query(Lens).all()
+
+	lenses = ET.Element('lenses')
+	for i in lensesQuery:
+		lens = ET.SubElement(lenses, 'lens')
+		id = ET.SubElement(lens, 'id').text = str(i.id)
+		name = ET.SubElement(lens, 'name').text = i.name
+		brand = ET.SubElement(lens, 'brand').text = i.brand
+		style = ET.SubElement(lens, 'type').text = i.style
+		zoom_min = ET.SubElement(lens, 'zoom_min').text = str(i.zoom_min)
+		zoom_max = ET.SubElement(lens, 'zoom_max').text = str(i.zoom_max)
+		aperture = ET.SubElement(lens, 'aperture').text = str(i.aperture)
+		price_per_day = ET.SubElement(lens, 'price_per_day').text = str(i.price_per_day)
+		price_per_week = ET.SubElement(lens, 'price_per_week').text = str(i.price_per_week)
+		price_per_month = ET.SubElement(lens, 'price_per_month').text = str(i.price_per_month)
+
+	print prettify(lenses)
+	return prettify(lenses)
+
+
+@app.route('/lens/<int:lens_id>/JSON')
+def lensJSON(lens_id):
+	lens = session.query(Lens).filter_by(id=lens_id).one()
+	return jsonify(Lens=lens.serialize)
+
+
+@app.route('/lens/<int:lens_id>/XML')
+def lensXML(lens_id):
+	query = session.query(Lens).filter_by(id=lens_id).one()
+	lens = ET.Element('lens')
+	id = ET.SubElement(lens, 'id').text = str(query.id)
+	name = ET.SubElement(lens, 'name').text = query.name
+	brand = ET.SubElement(lens, 'brand').text = query.brand
+	style = ET.SubElement(lens, 'type').text = query.style
+	zoom_min = ET.SubElement(lens, 'zoom_min').text = str(query.zoom_min)
+	zoom_max = ET.SubElement(lens, 'zoom_max').text = str(query.zoom_max)
+	aperture = ET.SubElement(lens, 'aperture').text = str(query.aperture)
+	price_per_day = ET.SubElement(lens, 'price_per_day').text = str(query.price_per_day)
+	price_per_week = ET.SubElement(lens, 'price_per_week').text = str(query.price_per_week)
+	price_per_month = ET.SubElement(lens, 'price_per_month').text = str(query.price_per_month)
+
+	print prettify(lens)
+	return prettify(lens)
 
 
 if __name__ == '__main__':
