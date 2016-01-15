@@ -40,6 +40,8 @@ session = DBSession()
 
 
 def allowed_file(filename):
+    """Return a filename if it has an allowed extension.
+    """
     return '.' in filename and filename.rsplit('.', 1)[1] \
         in ALLOWED_EXTENSIONS
 
@@ -51,28 +53,31 @@ def showHome():
     else:
         currentuser = login_session.get('user_id')
         user = session.query(User).filter_by(id=currentuser).one()
+    # Get all lens ID's and store in an array
     lensIDs = session.query(Lens.id).all()
     allLenses = []
     for id in lensIDs:
         allLenses.append(id[0])
-    print allLenses
+    # empty array to store featured lenses
     featured = []
     for num in range(1, 4):
-
         # Generate a random lens ID from the allLenses array
-
         randomNumber = random.choice(allLenses)
-
         # Remove this lens ID so it doesn't get choses twice
-
         allLenses.remove(randomNumber)
+        # append randomly choses lens to the featured array
         featured.append(session.query(Lens).filter_by(id=randomNumber).one())
+
+    # Get distinct brand names
     brands = []
     for value in session.query(Lens.brand).distinct():
         brands.append(value[0])
+
+    # Get distinct styles
     styles = []
     for value in session.query(Lens.style).distinct():
         styles.append(value[0])
+
     return render_template('index.html', featured=featured,
                            brands=brands, styles=styles, user=user)
 
@@ -97,54 +102,47 @@ def showLenses():
     except ValueError:
         page = 1
 
-    # offset variable is current page number * results per page
-
+    # offset variable for pagination
+    # current page number * results per page
     offset = (page - 1) * 12
 
-    # array to hold lens objects separated in groups of three
-
-    lenses = []
     if brand == 'all' and style == 'all':
         lenses = \
             session.query(Lens).order_by(Lens.name).limit(12).offset(offset)
-
         # count total rows.  Used for pagination
-
         rows = session.query(func.count(Lens.id)).scalar()
     elif brand == 'all' and style != 'all':
         lenses = \
             session.query(Lens).filter_by(style=style).order_by(
             	Lens.name).limit(12).offset(offset)
-
         # count total rows.  Used for pagination
-
         rows = \
             session.query(func.count(Lens.id)).filter_by(style=style).scalar()
     elif brand != 'all' and style == 'all':
         lenses = \
             session.query(Lens).filter_by(brand=brand).order_by(
                 Lens.name).limit(12).offset(offset)
-
         # count total rows.  Used for pagination
-
         rows = \
             session.query(func.count(Lens.id)).filter_by(brand=brand).scalar()
     else:
         lenses = \
             session.query(Lens).filter_by(brand=brand).filter_by(
                 style=style).order_by(Lens.name).limit(12).offset(offset)
-
         # count total rows.  Used for pagination
-
         rows = \
             session.query(func.count(Lens.id)).filter_by(
                 brand=brand).filter_by(style=style).scalar()
+    # Get distinct brand names
     brands = []
     for value in session.query(Lens.brand).distinct():
         brands.append(value[0])
+
+    # Get distinct style names
     styles = []
     for value in session.query(Lens.style).distinct():
         styles.append(value[0])
+
     msg = \
         'Results <b>{start}</b> - <b>{end}</b> of <b>{found}</b> {record_name}'
     pagination = Pagination(
@@ -154,8 +152,8 @@ def showLenses():
         found=rows,
         css_framework='bootstrap3',
         display_msg=msg,
-        per_page=12,
-        )
+        per_page=12
+    )
     return render_template(
         'lenses.html',
         lenses=lenses,
@@ -163,8 +161,8 @@ def showLenses():
         pagination=pagination,
         brands=brands,
         styles=styles,
-        user=user,
-        )
+        user=user
+    )
 
 
 @app.route('/lens/<int:lens_id>')
@@ -177,8 +175,11 @@ def showLens(lens_id):
     lens = session.query(Lens).filter_by(id=lens_id).first()
     brand = lens.brand
     style = lens.style
+
+    # Get related lenses
     related = session.query(Lens).filter_by(brand=brand).filter(
         Lens.id != lens_id).filter_by(style=style).limit(5)
+
     return render_template('lens.html', lens=lens, related=related,
                            user=user)
 
@@ -201,10 +202,12 @@ def uploadLens():
         currentuser = login_session.get('user_id')
         user = session.query(User).filter_by(id=currentuser).one()
     if request.method == 'POST':
+        # If this is a prime lens, max zoom is the same as min zoom
         if request.form['style'] == 'Prime':
             maximumZoom = request.form['min-zoom']
         else:
             maximumZoom = request.form['max-zoom']
+
         newLens = Lens(
             name=request.form['name'],
             picture=None,
@@ -216,7 +219,7 @@ def uploadLens():
             aperture=request.form['aperture'],
             price_per_day=request.form['price-day'],
             price_per_week=request.form['price-week'],
-            price_per_month=request.form['price-month'],
+            price_per_month=request.form['price-month']
         )
 
         session.add(newLens)
@@ -228,15 +231,21 @@ def uploadLens():
         session.flush()
         session.refresh(newLens)
 
+        # Get the picture item
         file = request.files['file']
+        # If the image is an allowed extension (defined above)
         if file and allowed_file(file.filename):
+            # create secure filename
             filename = secure_filename(file.filename)
+            # define upload folder, each lens has it's own image folder
             UPLOAD_FOLDER = 'static/lens-img/' + str(newLens.id)
             if not os.path.exists(UPLOAD_FOLDER):
                 os.makedirs(UPLOAD_FOLDER)
             app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+            # save image in upload folder
             file.save(os.path.join(app.config['UPLOAD_FOLDER'],
                       filename))
+            # save url string in lens database object
             newLens.picture = str(newLens.id) + '/' + filename
         session.add(newLens)
         session.commit()
@@ -256,11 +265,16 @@ def editLens(lens_id):
     else:
         currentuser = login_session.get('user_id')
         user = session.query(User).filter_by(id=currentuser).one()
+
+    # query the lens to edit
     lens = session.query(Lens).filter_by(id=lens_id).one()
+    # if the lens user id does not match the login session user id
+    # return an error alert
     if lens.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert(" + \
             "'You are not authorized to edit this lens');}</script>" + \
             "<body onload='myFunction()'>"
+
     if request.method == 'POST':
         if request.files['file']:
             file = request.files['file']
@@ -318,12 +332,15 @@ def deleteLens(lens_id):
     if request.method == 'POST':
 
         # Protect against CSRF
-
         secret_key = request.form['CSRFToken']
+        # if the secret key from the form submit does not match
+        # the secret key from the user's login session
+        # return an error alert
         if secret_key != login_session.get('user_secret'):
             return "<script>function myFunction() {alert('" + \
                 "We enountered a problem.');}</script>" + \
                 "<body onload='myFunction()'>"
+
         session.delete(lens)
         session.commit()
         flash('Your lens has been deleted.', 'success')
@@ -336,6 +353,7 @@ def deleteLens(lens_id):
 
 @app.route('/getState')
 def generateState():
+    """Creates state token.  Called via ajax"""
     state = ''.join(random.choice(string.ascii_uppercase +
                     string.digits) for x in range(32))
     login_session['state'] = state
@@ -346,7 +364,6 @@ def generateState():
 def gconnect():
 
     # Validate state token
-
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'
                                             ), 401)
@@ -356,13 +373,11 @@ def gconnect():
     # Obtain authorization code
     # this was passed here as POST data by AJAX request in login.html
     # data: authResult.code
-
     code = request.data
 
     try:
 
         # Upgrade the authorization code into a credentials object
-
         oauth_flow = flow_from_clientsecrets('client_secrets.json',
                                              scope='')
         oauth_flow.redirect_uri = 'postmessage'
@@ -375,7 +390,6 @@ def gconnect():
         return response
 
     # Check that the access token is valid.
-
     access_token = credentials.access_token
     url = \
         'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' \
@@ -384,14 +398,12 @@ def gconnect():
     result = json.loads(h.request(url, 'GET')[1])
 
     # If there was an error in the access token info, abort.
-
     if result.get('error') is not None:
         print result.get('error')
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
 
     # Verify that the access token is used for the intended user.
-
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
         response = \
@@ -401,7 +413,6 @@ def gconnect():
         return response
 
     # Verify that the access token is valid for this app.
-
     if result['issued_to'] != CLIENT_ID:
         response = \
             make_response(json.dumps("Token's client ID does not match app's."
@@ -420,12 +431,10 @@ def gconnect():
         return response
 
     # Store the access token in the session for later use.
-
     login_session['credentials'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
     # Get user info
-
     userinfo_url = 'https://www.googleapis.com/oauth2/v1/userinfo'
     params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
@@ -437,18 +446,15 @@ def gconnect():
     login_session['email'] = data['email']
 
     # ADD PROVIDER TO LOGIN SESSION
-
     login_session['provider'] = 'google'
 
     # Create token and add to login session to prevent CSRF
-
     user_secret_key = ''.join(random.choice(string.ascii_uppercase +
                               string.digits) for x in range(32))
     login_session['user_secret'] = user_secret_key
 
     # if user exists, store user id in login_session
     # if not, create user
-
     user_id = getUserID(login_session['email'])
     if not user_id:
         user_id = createUser(login_session)
@@ -457,7 +463,6 @@ def gconnect():
     user = getUserInfo(user_id)
 
     # if picture has changed, update it
-
     if user.picture != login_session['picture']:
         user.picture = login_session['picture']
         session.add(user)
@@ -495,11 +500,9 @@ def fbconnect():
     print result
 
     # Use token to get user info from API
-
     userinfo_url = 'https://graph.facebook.com/v2.4/me'
 
     # strip expire tag from access token
-
     token = result.split('&')[0]
 
     url = 'https://graph.facebook.com/v2.4/me?%s&fields=name,id,email' \
@@ -509,7 +512,6 @@ def fbconnect():
 
     # print "url sent for API access:%s"% url
     # print "API JSON result: %s" % result
-
     data = json.loads(result)
     login_session['provider'] = 'facebook'
     login_session['username'] = data['name']
@@ -517,19 +519,16 @@ def fbconnect():
     login_session['facebook_id'] = data['id']
 
     # Create token and add to login session to prevent CSRF
-
     user_secret_key = ''.join(random.choice(string.ascii_uppercase +
                               string.digits) for x in range(32))
     login_session['user_secret'] = user_secret_key
 
     # The token must be stored in the login_session in order to properly logout
     # let's strip out the information before the equals sign in our token
-
     stored_token = token.split('=')[1]
     login_session['access_token'] = stored_token
 
     # Get user picture
-
     url = 'https://graph.facebook.com/v2.4/me/picture' + \
         '?%s&redirect=0&height=200&width=200' \
         % token
@@ -540,7 +539,6 @@ def fbconnect():
     login_session['picture'] = data['data']['url']
 
     # see if user exists
-
     user_id = getUserID(login_session['email'])
     if not user_id:
         user_id = createUser(login_session)
@@ -549,7 +547,6 @@ def fbconnect():
     user = getUserInfo(user_id)
 
     # if picture has changed, update it
-
     if user.picture != login_session['picture']:
         user.picture = login_session['picture']
         session.add(user)
@@ -569,7 +566,6 @@ def fbdisconnect():
     facebook_id = login_session['facebook_id']
 
     # The access token must me included to successfully logout
-
     access_token = login_session['access_token']
     url = 'https://graph.facebook.com/%s/permissions?access_token=%s' \
         % (facebook_id, access_token)
@@ -597,7 +593,6 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
 
         # Make sure everything else is deleted as well
-
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
@@ -634,7 +629,6 @@ def gdisconnect():
 
 
 # Disconnect based on provider
-
 @app.route('/logout')
 def disconnect():
     if 'provider' in login_session:
@@ -684,8 +678,10 @@ def requestRental(lens_id):
         user = session.query(User).filter_by(id=currentuser).one()
     lens = session.query(Lens).filter_by(id=lens_id).one()
 
+    # Get all rentals for this lens
     rentals = session.query(Rental).filter_by(lens_id=lens.id)
     dates = []
+    # For each rental, store all rented dates in dates array
     for rental in rentals:
         startDate = rental.start_date
         endDate = rental.end_date
@@ -695,18 +691,19 @@ def requestRental(lens_id):
             dates.append(thisDate.strftime('%Y-%m-%d'))
 
     if request.method == 'POST':
-        print 'something'
         start = request.form['startDate']
         end = request.form['endDate']
         start = start.split(' ')
         end = end.split(' ')
         start = map(int, start)
         end = map(int, end)
-        newRental = Rental(start_date=date(start[0], start[1],
-                           start[2]), end_date=date(end[0], end[1],
-                           end[2]),
-                           renter_id=login_session.get('user_id'),
-                           owner_id=lens.user_id, lens_id=lens.id)
+        # Create rental object with start and end date objects
+        newRental = Rental(
+            start_date=date(start[0], start[1], start[2]),
+            end_date=date(end[0], end[1], end[2]),
+            renter_id=login_session.get('user_id'),
+            owner_id=lens.user_id, lens_id=lens.id
+        )
 
         checkStart = newRental.start_date.strftime('%Y-%m-%d')
         checkEnd = newRental.end_date.strftime('%Y-%m-%d')
@@ -723,7 +720,6 @@ def requestRental(lens_id):
 
         # If the dates array includes either the start or end date, cancel the rental
         # This should never happen anyway, since the dates are disabled in the frontend code
-
         if startIndex != -1 or endIndex != -1:
             return "<script>function myFunction() {alert('Oops!  " + \
                 "It looks like the lens you requested is alread rented on those dates. " + \
@@ -743,7 +739,6 @@ def requestRental(lens_id):
 
 
 # User Helper Functions
-
 def createUser(login_session):
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
@@ -769,15 +764,19 @@ def getUserID(email):
 
 
 # JSON APIs to view Lens Information
-
 @app.route('/lenses/JSON')
 def lensesJSON():
     lenses = session.query(Lens).all()
     return jsonify(Lenses=[i.serialize for i in lenses])
 
 
-# XML API to view Lens Information
+@app.route('/lens/<int:lens_id>/JSON')
+def lensJSON(lens_id):
+    lens = session.query(Lens).filter_by(id=lens_id).one()
+    return jsonify(Lens=lens.serialize)
 
+
+# XML API to view Lens Information
 @app.route('/lenses/XML')
 def lensesRSS():
     lensesQuery = session.query(Lens).all()
@@ -804,12 +803,6 @@ def lensesRSS():
 
     print prettify(lenses)
     return prettify(lenses)
-
-
-@app.route('/lens/<int:lens_id>/JSON')
-def lensJSON(lens_id):
-    lens = session.query(Lens).filter_by(id=lens_id).one()
-    return jsonify(Lens=lens.serialize)
 
 
 @app.route('/lens/<int:lens_id>/XML')
