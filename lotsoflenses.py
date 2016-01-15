@@ -20,23 +20,25 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-#Create user
+# Create user
 User1 = User(
        name="Joe McPhotographer",
        email="joe-takes-photos@gmail.com",
-       picture='https://pbs.twimg.com/profile_images/2671170543/18debd694829ed78203a5a36dd364160_400x400.png')
+       picture='https://pbs.twimg.com/profile_images/2671170543/' +
+               '18debd694829ed78203a5a36dd364160_400x400.png')
 session.add(User1)
 session.commit()
 
-#Create user
+# Create user
 User2 = User(
        name="Johnny RentsAlot",
        email="Johnny-rents-lenses@gmail.com",
-       picture='https://pbs.twimg.com/profile_images/2671170543/18debd694829ed78203a5a36dd364160_400x400.png')
+       picture='https://pbs.twimg.com/profile_images/2671170543/' +
+               '18debd694829ed78203a5a36dd364160_400x400.png')
 session.add(User2)
 session.commit()
 
-#Create lenses.  All owned by user 1
+# Create lenses.  All owned by user 1
 lens1 = Lens(
        user_id=1,
        name="Canon EF 50mm f/1.8 II Camera Lens",
@@ -90,7 +92,8 @@ session.commit()
 
 lens4 = Lens(
        user_id=1,
-       name="Canon EF 100-400mm f/4.5-5.6L IS USM Telephoto Zoom Lens for Canon SLR Cameras",
+       name="Canon EF 100-400mm f/4.5-5.6L IS USM Telephoto Zoom Lens" +
+            " for Canon SLR Cameras",
        brand="Canon",
        style="Telephoto",
        zoom_min="100",
@@ -107,7 +110,8 @@ session.commit()
 
 lens5 = Lens(
        user_id=1,
-       name="Olympus M. 40-150mm F4.0-5.6 R Zoom Lens (Black) for Olympus and Panasonic Micro 4/3 Cameras",
+       name="Olympus M. 40-150mm F4.0-5.6 R Zoom Lens (Black) for Olympus" +
+            " and Panasonic Micro 4/3 Cameras",
        brand="Olympus",
        style="Zoom",
        zoom_min="40",
@@ -124,7 +128,8 @@ session.commit()
 
 lens6 = Lens(
        user_id=1,
-       name="Sigma 17-50mm f/2.8 EX DC OS HSM FLD Large Aperture Standard Zoom Lens for Canon Digital DSLR Camera",
+       name="Sigma 17-50mm f/2.8 EX DC OS HSM FLD Large Aperture Standard" +
+            " Zoom Lens for Canon Digital DSLR Camera",
        brand="Canon",
        style="Zoom",
        zoom_min="17",
@@ -141,7 +146,8 @@ session.commit()
 
 lens7 = Lens(
        user_id=1,
-       name="Sony SEL90M28G FE 90mm f/2.8-22 Macro G OSS Standard-Prime Lens for Mirrorless Cameras",
+       name="Sony SEL90M28G FE 90mm f/2.8-22 Macro G OSS Standard-Prime " +
+            "Lens for Mirrorless Cameras",
        brand="Sony",
        style="Macro",
        zoom_min="90",
@@ -158,7 +164,8 @@ session.commit()
 
 lens8 = Lens(
        user_id=1,
-       name="Rokinon TSL24M-P 24mm f/3.5 Tilt Shift Lens for Pentax KAF Cameras",
+       name="Rokinon TSL24M-P 24mm f/3.5 Tilt Shift Lens for Pentax KAF " +
+            "Cameras",
        brand="Pentax",
        style="Tilt-Shift",
        zoom_min="24",
@@ -175,7 +182,8 @@ session.commit()
 
 lens9 = Lens(
        user_id=1,
-       name="PENTAX DA 10-17mm f/3.5-4.5 ED (IF) Fish-Eye Lens for Pentax Digital SLR",
+       name="PENTAX DA 10-17mm f/3.5-4.5 ED (IF) Fish-Eye Lens for Pentax " +
+            "Digital SLR",
        brand="Pentax",
        style="Fisheye",
        zoom_min="10",
@@ -209,7 +217,8 @@ session.commit()
 
 lens11 = Lens(
        user_id=1,
-       name="Nikon AF-S FX NIKKOR 24-70mm f/2.8G ED Zoom Lens with Auto Focus for Nikon DSLR Cameras",
+       name="Nikon AF-S FX NIKKOR 24-70mm f/2.8G ED Zoom Lens with Auto " +
+            "Focus for Nikon DSLR Cameras",
        brand="Nikon",
        style="Zoom",
        zoom_min="24",
@@ -226,7 +235,8 @@ session.commit()
 
 lens12 = Lens(
        user_id=1,
-       name="Rokinon 14mm f/2.8 IF ED UMC Ultra Wide Angle Fixed Lens w/ Built-in AE Chip for Nikon",
+       name="Rokinon 14mm f/2.8 IF ED UMC Ultra Wide Angle Fixed Lens w/" +
+            " Built-in AE Chip for Nikon",
        brand="Nikon",
        style="Wide Angle",
        zoom_min="14",
@@ -260,7 +270,8 @@ session.commit()
 
 lens14 = Lens(
        user_id=1,
-       name="Olympus M.ZUIKO Digital ED 45mm F1.8 (Black) Lens for Olympus and Panasonic Micro 4/3 Cameras",
+       name="Olympus M.ZUIKO Digital ED 45mm F1.8 (Black) Lens for Olympus" +
+            " and Panasonic Micro 4/3 Cameras",
        brand="Olympus",
        style="Prime",
        zoom_min="45",
@@ -277,7 +288,8 @@ session.commit()
 
 lens15 = Lens(
        user_id=1,
-       name="Sony 24-70mm F4 Vario-Tessar T* FE OSS Interchangeable Full Frame Zoom Lens",
+       name="Sony 24-70mm F4 Vario-Tessar T* FE OSS Interchangeable Full" +
+            " Frame Zoom Lens",
        brand="Sony",
        style="Zoom",
        zoom_min="24",
