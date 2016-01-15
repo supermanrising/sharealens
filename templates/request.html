@@ -63,7 +63,8 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-8 col-sm-offset-2">
-					<button type="submit" class="ghost-submit bottom-20" id="submit" type="submit">Request Rental</button>
+					<button type="submit" class="ghost-submit" id="submit" type="submit">Request Rental</button>
+					<a href="{{url_for('showLens', lens_id=lens.id)}}" class="cancel-link top-20 bottom-40">Cancel</a>
 				</div>
 			</div>
 		</div>
