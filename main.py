@@ -256,12 +256,17 @@ def deleteLens(lens_id):
 	if lens.user_id != login_session['user_id']:
 		return "<script>function myFunction() {alert('You are not authorized to delete this lens');}</script><body onload='myFunction()'>"
 	if request.method == 'POST':
+		# Protect against CSRF
+		secret_key = request.form['CSRFToken']
+		if secret_key != login_session.get('user_secret'):
+			return "<script>function myFunction() {alert('We enountered a problem.');}</script><body onload='myFunction()'>"
 		session.delete(lens)
 		session.commit()
 		flash('Your lens has been deleted.', 'success')
-		return redirect(url_for('showAccount', showRentals=False))
+		return redirect(url_for('showAccount', showRentals='lenses'))
 	else:
-		return render_template('delete-lens.html', user=user, lens=lens)
+		user_secret_key = login_session.get('user_secret')
+		return render_template('delete-lens.html', user=user, lens=lens, secret=user_secret_key)
 
 
 @app.route('/getState')
@@ -345,6 +350,9 @@ def gconnect():
 	login_session['email'] = data['email']
 	# ADD PROVIDER TO LOGIN SESSION
 	login_session['provider'] = 'google'
+	# Create token and add to login session to prevent CSRF
+	user_secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+	login_session['user_secret'] = user_secret_key
 
 	# if user exists, store user id in login_session
 	# if not, create user
@@ -401,6 +409,9 @@ def fbconnect():
 	login_session['username'] = data["name"]
 	login_session['email'] = data["email"]
 	login_session['facebook_id'] = data["id"]
+	# Create token and add to login session to prevent CSRF
+	user_secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+	login_session['user_secret'] = user_secret_key
 
 	# The token must be stored in the login_session in order to properly logout, let's strip out the information before the equals sign in our token
 	stored_token = token.split("=")[1]
@@ -447,6 +458,7 @@ def fbdisconnect():
 	del login_session['picture']
 	del login_session['user_id']
 	del login_session['facebook_id']
+	del login_session['access_token']
 	return "you have been logged out"
 
 
@@ -464,6 +476,7 @@ def gdisconnect():
 		del login_session['email']
 		del login_session['picture']
 		del login_session['user_id']
+		del login_session['access_token']
 		return response
 	access_token = login_session['credentials']
 	print 'In gdisconnect access token is %s', access_token
@@ -481,6 +494,7 @@ def gdisconnect():
 		del login_session['email']
 		del login_session['picture']
 		del login_session['user_id']
+		del login_session['access_token']
 		response = make_response(json.dumps('Successfully disconnected.'), 200)
 		response.headers['Content-Type'] = 'application/json'
 		return response
@@ -511,6 +525,8 @@ def disconnect():
 		del login_session['email']
 		del login_session['picture']
 		del login_session['user_id']
+		del login_session['access_token']
+		del login_session['provider']
 		return redirect(url_for('showHome'))
 
 
@@ -584,7 +600,7 @@ def requestRental(lens_id):
 
 		message = Markup("<strong>Well done!</strong> Your lens rental request has been approved.")
 		flash(message, "success")
-		return redirect(url_for('showAccount', showRentals=True))
+		return redirect(url_for('showAccount', showRentals='rentals'))
 	else:
 		return render_template('request.html', user=user, lens=lens, dates=dates)
 
@@ -612,6 +628,13 @@ def getUserID(email):
 		return user.id
 	except:
 		return None
+
+
+# JSON APIs to view Restaurant Information
+@app.route('/lenses/JSON')
+def lensesJSON():
+    lenses = session.query(Lens).all()
+    return jsonify(Lenses=[i.serialize for i in lenses])
 
 
 if __name__ == '__main__':

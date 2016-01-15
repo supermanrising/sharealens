@@ -11,6 +11,7 @@
 			<div class="row">
 				<div class="col-sm-8 col-sm-offset-2">
 					<h1 class="rent-heading text-center">Are you sure you want to delete {{lens.name}}?</h1>
+					<input type="hidden" name="CSRFToken" value="{{secret}}">
 					<button type="submit" class="ghost-submit top-20 bottom-20" id="submit" type="submit">Delete Lens</button>
 					<a href="{{url_for('showLens', lens_id=lens.id)}}" class="cancel-link">Cancel</a>
 				</div>
