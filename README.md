@@ -55,10 +55,10 @@ From here, you can delete your lenses (Deleting lenses is protected from CSRF), 
 
 Share-A-Lens provides JSON and XML API endpoints for computer readable data.  You can access this data by going to the following URL's:
 
-'localhost:5000/lenses/JSON'
-'localhost:5000/lenses/XML'
-'localhost:5000/lens/<int:lens_id>/JSON'
-'localhost:5000/lens/<int:lens_id>/XML'
+`localhost:5000/lenses/JSON`
+`localhost:5000/lenses/XML`
+`localhost:5000/lens/<int:lens_id>/JSON`
+`localhost:5000/lens/<int:lens_id>/XML`
 
 Virtual Photo Walks uses the following Javascript libraries / extensions:
 
