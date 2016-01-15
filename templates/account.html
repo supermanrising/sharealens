@@ -6,6 +6,20 @@
 		{% include 'navbar.html' %}
 	</nav>
 	<div class="container">
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+				{% for category, message in messages %}
+					<div class="row top-20">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="alert alert-{{category}} alert-dismissible" role="alert">
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								{{message}}
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
 		<div class="row">
 			<div class="col-sm-2 col-sm-offset-5">
 				<img src="{{user.picture}}" alt="{{user.name}}" class="img-responsive img-circle user-pic">
@@ -26,7 +40,7 @@
 							{% for lens in lenses %}
 								<div class="search-result col-sm-3">
 									<a href="{{url_for('showLens', lens_id = lens.id)}}" class="lens-link">
-										{% if lens.picture != None %}<img src="static/lens-img/{{lens.picture}}" class="img-responsive account-lens-img">{% endif %}
+										{% if lens.picture != None %}<img src="{{ url_for('static', filename='lens-img/') }}{{lens.picture}}" class="img-responsive account-lens-img">{% endif %}
 										<p class="lens-name-sm">{{lens.name}}</p>
 										<div class="button">
 											<a href="{{url_for('editLens', lens_id = lens.id)}}" class="ghost-submit-link ghost-half"><span class="glyphicon glyphicon-pencil"></span> &nbsp;Edit</a>
@@ -42,13 +56,18 @@
 								{% endif %}
 							{% endfor %}
 						</div>
+						<div class="row top-40 bottom-40">
+							<div class="col-xs-12">
+								<a href="{{ url_for('uploadLens') }}" class="ghost-submit-link">Create A New Lens</a>
+							</div>
+						</div>
 					</div>
 					<div role="tabpanel" class="tab-pane fade" id="my-rentals">
 						<div class="row result-row custom-row">
 							{% for rental in rentals %}
 								<div class="search-result col-sm-3">
 									<a href="{{url_for('showLens', lens_id = rental.lens.id)}}" class="lens-link">
-										{% if rental.lens.picture != None %}<img src="static/lens-img/{{rental.lens.picture}}" class="img-responsive account-lens-img">{% endif %}
+										{% if rental.lens.picture != None %}<img src="{{ url_for('static', filename='lens-img/') }}{{rental.lens.picture}}" class="img-responsive account-lens-img">{% endif %}
 										<p class="lens-name-sm">{{rental.lens.name}}</p>
 									</a>
 									<p><b>Pickup:</b> {{rental.start_date}}</p>
@@ -68,4 +87,9 @@
 		</div>
 	</div>
 	{% include 'footer.html' %}
+	{% if showRentals %}
+		<script>
+			$('a[href="#my-rentals"]').tab('show');
+		</script>
+	{% endif %}
 {% endblock %}

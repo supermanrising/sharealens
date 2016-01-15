@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Markup
 from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -151,7 +151,6 @@ def uploadLens():
 		currentuser = login_session.get('user_id')
 		user = session.query(User).filter_by(id=currentuser).one()
 	if request.method == 'POST':
-		file = request.files['file']
 		if request.form['style'] == 'Prime':
 			maximumZoom = request.form['min-zoom']
 		else:
@@ -169,16 +168,29 @@ def uploadLens():
 			price_per_week = request.form['price-week'],
 			price_per_month = request.form['price-month']
 		)
+
+		session.add(newLens)
+
+		# flush and refresh to access the lens ID
+		# More info here: http://stackoverflow.com/questions/1316952/sqlalchemy-flush-and-get-inserted-id
+		session.flush()
+		session.refresh(newLens)
+
+		file = request.files['file']
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
-			UPLOAD_FOLDER = 'static/lens-img/' + str(login_session['user_id'])
+			UPLOAD_FOLDER = 'static/lens-img/' + str(newLens.id)
+			if not os.path.exists(UPLOAD_FOLDER):
+				os.makedirs(UPLOAD_FOLDER)
 			app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			newLens.picture = str(newLens.id) + '/' + filename
 		session.add(newLens)
 		session.commit()
-		flash("New Lens Created")
-		return redirect(url_for('showLens', lens_id=newLens.id, user=user))
+
+		message = Markup('<b>Well done!</b>  Your lens has been uploaded.')
+		flash(message, 'success')
+		return redirect(url_for('showLens', lens_id=newLens.id))
 	else:
 		return render_template('rent-your-gear.html', user=user)
 
@@ -198,12 +210,12 @@ def editLens(lens_id):
 			file = request.files['file']
 			if file and allowed_file(file.filename):
 				filename = secure_filename(file.filename)
-				UPLOAD_FOLDER = 'static/lens-img/' + str(login_session['user_id'])
+				UPLOAD_FOLDER = 'static/lens-img/' + str(lens.id)
 				if not os.path.exists(UPLOAD_FOLDER):
 					os.makedirs(UPLOAD_FOLDER)
 				app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-				lens.picture = str(login_session['user_id']) + '/' + filename
+				lens.picture = str(lens.id) + '/' + filename
 		if request.form['name']:
 			lens.name = request.form['name']
 		if request.form['brand']:
@@ -225,8 +237,10 @@ def editLens(lens_id):
 
 		session.add(lens)
 		session.commit()
-		flash("Lens Successfully Edited")
-		return redirect(url_for('showLens', lens_id=lens_id, user=user))
+
+		message = Markup('<b>Well done!</b>  Your lens has been edited.')
+		flash(message, 'success')
+		return redirect(url_for('showLens', lens_id=lens_id))
 	else:
 		return render_template('edit-lens.html', user=user, lens=lens)
 
@@ -244,8 +258,8 @@ def deleteLens(lens_id):
 	if request.method == 'POST':
 		session.delete(lens)
 		session.commit()
-		flash("Lens Deleted")
-		return redirect(url_for('showHome'))
+		flash('Your lens has been deleted.', 'success')
+		return redirect(url_for('showAccount', showRentals=False))
 	else:
 		return render_template('delete-lens.html', user=user, lens=lens)
 
@@ -347,8 +361,8 @@ def gconnect():
 		session.commit()
 
 	output = 'Success'
-	flash("you are now logged in as %s" % login_session['username'])
-	print "done!"
+	message = Markup('<strong>Success!</strong>  You are now logged in as %s' % login_session['username'])
+	flash(message, 'success')
 	return output
 
 
@@ -413,16 +427,10 @@ def fbconnect():
 		session.add(user)
 		session.commit()
 
-	output = ''
-	output += '<h1>Welcome, '
-	output += login_session['username']
+	output = 'Success'
 
-	output += '!</h1>'
-	output += '<img src="'
-	output += login_session['picture']
-	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-
-	flash("Now logged in as %s" % login_session['username'])
+	message = Markup('<strong>Success!</strong>  You are now logged in as %s' % login_session['username'])
+	flash(message, 'success')
 	return output
 
 
@@ -491,10 +499,10 @@ def disconnect():
 		if login_session['provider'] == 'facebook':
 			fbdisconnect()
 		del login_session['provider']
-		flash("You have successfully been logged out.")
+		flash("You have successfully been logged out.", "success")
 		return redirect(url_for('showHome'))
 	else:
-		flash("You were not logged in")
+		flash("You were not logged in", 'warning')
 		# I was having some problems with cookies being deleted over time
 		# It caused issues logging out, so I delete login_session data here as well
 		del login_session['credentials'] 
@@ -506,8 +514,8 @@ def disconnect():
 		return redirect(url_for('showHome'))
 
 
-@app.route('/account')
-def showAccount():
+@app.route('/account/<showRentals>')
+def showAccount(showRentals):
 	if 'username' not in login_session:
 		return redirect(url_for('showLogin', next='account'))
 	else:
@@ -515,7 +523,7 @@ def showAccount():
 		user = session.query(User).filter_by(id=currentuser).one()
 	lenses = session.query(Lens).filter_by(user_id=user.id).all()
 	rentals = session.query(Rental).filter_by(renter_id=user.id).all()
-	return render_template('account.html', user=user, lenses=lenses, rentals=rentals)
+	return render_template('account.html', user=user, lenses=lenses, rentals=rentals, showRentals=showRentals)
 
 
 @app.route('/request/<int:lens_id>', methods=['GET', 'POST'])
@@ -573,8 +581,10 @@ def requestRental(lens_id):
 		
 		session.add(newRental)
 		session.commit()
-		flash("Lens Rental Request Successful!")
-		return redirect(url_for('showAccount', user=user))
+
+		message = Markup("<strong>Well done!</strong> Your lens rental request has been approved.")
+		flash(message, "success")
+		return redirect(url_for('showAccount', showRentals=True))
 	else:
 		return render_template('request.html', user=user, lens=lens, dates=dates)
 

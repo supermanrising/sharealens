@@ -102,7 +102,15 @@
 			});
 
 			// Store dates in hidden input fields on submit to be passed to server side code
-			$('#request-form').submit( function(e){
+			$('#request-form').submit( function(){
+				if (startDate === "" | startDate === undefined) {
+					alert("Please select a start date");
+					return false;
+				}
+				if (endDate === "" | endDate === undefined) {
+					alert("Please select an end date");
+					return false;
+				}
 				startDate = startDate.format('YYYY MM DD');
 				endDate = endDate.format('YYYY MM DD');
 				$('#startDate').val(startDate);
@@ -144,7 +152,9 @@
 			priceMonth = Number(priceMonth.replace('$', ''));
 
 			var totalPrice = (priceDay * days) + (priceWeek * weeks) + (priceMonth * months);
-			$('#total').text(totalPrice);
+			if (typeof totalPrice === 'number') {
+				$('#total').text(totalPrice);
+			}
 		}
 	</script>
 {% endblock %}
